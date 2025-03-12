@@ -21,7 +21,7 @@ jobs:
 
     - name: Build Server Maven Project
       run: |
-        cd server
+        cd server/source_control_insights
         mvn clean package -DskipTests
 
     - name: Upload JAR Artifact
