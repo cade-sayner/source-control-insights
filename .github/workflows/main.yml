@@ -28,7 +28,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: server-jar
-        path: server/target/*.jar
+        path: server/source_control_insights/target/*.jar
 
     - name: Deploy to EC2
       env:
