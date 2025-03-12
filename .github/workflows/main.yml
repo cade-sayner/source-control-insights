@@ -42,7 +42,7 @@ jobs:
         chmod 600 private_key.pem
 
         # Copy JAR to EC2
-        scp -v -i private_key.pem server/source_control_insights/target/*.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/server.jar
+        scp -v StrictHostKeyChecking=no -i private_key.pem server/source_control_insights/target/*.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/server.jar
 
         # Connect and set up environment variables & run the server
         ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
