@@ -1,26 +1,29 @@
 package com.insights.client.source_control_insights.Entities;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="User")
-public class User {
+@Table(name="app_user")
+public class AppUser {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Uses the DB's auto-increment
+    @Column(name = "user_id")
+    private int userId;
+
     @Column(name = "google_sub")
-    private String GoogleSub;
+    private String googleSub;
 
     @Column(name = "username")
     private String username;
@@ -29,14 +32,8 @@ public class User {
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "google_sub"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id" ))
+    @JoinTable(name = "UserRole", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id" ))
     private List<Role> roles;
-
-    @OneToMany(mappedBy = "contributor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Worklog> worklogs = new ArrayList<>();
-
-    @OneToMany(mappedBy = "contributor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Commit> commits = new ArrayList<>();
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
@@ -47,7 +44,7 @@ public class User {
     }
 
     public void setGoogleSub(String googleSub){
-        this.GoogleSub = googleSub;
+        this.googleSub = googleSub;
     }
 
     public void setEmail(String email) {
@@ -59,7 +56,7 @@ public class User {
     }
 
     public String getGoogleSub() {
-        return this.GoogleSub;
+        return this.googleSub;
     }
 
     public String getEmail() {
@@ -70,12 +67,12 @@ public class User {
         return username;
     }
 
-    public User(String googleSub, String username, String email, List<Role> roles) {
-        this.GoogleSub = googleSub;
+    public AppUser(String googleSub, String username, String email, List<Role> roles) {
+        this.googleSub = googleSub;
         this.username = username;
         this.email = email;
         this.roles = roles;
     }
 
-    public User() {}
+    public AppUser() {}
 }

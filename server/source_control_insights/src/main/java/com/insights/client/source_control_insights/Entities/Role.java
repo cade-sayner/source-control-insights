@@ -14,7 +14,6 @@ import jakarta.persistence.UniqueConstraint;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "role_name" }))
 public class Role {
 
- 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Uses the DB's auto-increment
     @Column(name = "role_id")
