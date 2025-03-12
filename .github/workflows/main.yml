@@ -1,0 +1,61 @@
+name: Deploy Server to EC2
+
+on:
+  push:
+    branches:
+      - main  # Adjust as needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set Up JDK 23
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'  # Use Eclipse Temurin (or adoptopenjdk if needed)
+        java-version: '23'
+
+    - name: Build Server Maven Project
+      run: |
+        cd server
+        mvn clean package -DskipTests
+
+    - name: Upload JAR Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: server-jar
+        path: server/target/*.jar
+
+    - name: Deploy to EC2
+      env:
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      run: |
+        # Save SSH key
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+
+        # Copy JAR to EC2
+        scp -i private_key.pem server/target/*.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/server.jar
+
+        # Connect and set up environment variables & run the server
+        ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          export APP_ENV=production
+          export DATABASE_URL="jdbc:mysql://your-db-url"
+          
+          # Kill any running instance of the server
+          pkill -f "java -jar /home/$EC2_USER/server.jar" || true
+
+          # Run the JAR in the background
+          nohup java -jar /home/$EC2_USER/server.jar > server.log 2>&1 &
+
+          echo "Server is running..."
+        EOF
+
+    - name: Clean Up
+      run: rm -f private_key.pem
