@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "role_name" }))
+@Table(name="roles", uniqueConstraints = @UniqueConstraint(columnNames = { "role_name" }))
 public class Role {
 
     @Id
@@ -28,8 +28,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(int roleId, String roleName, String roleDescription) {
-        this.roleId = roleId;
+    public Role(String roleName, String roleDescription) {
         this.roleName = roleName;
         this.roleDescription = roleDescription;
     }

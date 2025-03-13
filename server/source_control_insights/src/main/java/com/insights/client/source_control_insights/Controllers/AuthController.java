@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insights.client.source_control_insights.Entities.AppUser;
 import com.insights.client.source_control_insights.Entities.Role;
+import com.insights.client.source_control_insights.Entities.User;
 import com.insights.client.source_control_insights.Models.LoginRequestBody;
 import com.insights.client.source_control_insights.Repositories.RoleRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
@@ -49,31 +49,25 @@ public class AuthController {
         String jwt = googleAuthService.getJWT(loginReq.getAuthCode());
         Map<String, Object> claims = extractClaims(jwt);
        
-        // get the email of this user
+        // get info from the user's jwt
         String email = claims.get("email").toString();
         String google_sub = claims.get("sub").toString();
         String username = claims.get("name").toString();
     
-
         // look up their role in the database, if they don't exist yet then 
         // create them and just assign them the dev role
-        List<AppUser> users = userRepository.findByGoogleSub(google_sub);
-        System.out.println(users);
+        List<User> users = userRepository.findByGoogleId(google_sub);
         if (users.isEmpty()) {
             List<Role> roles = roleRepository.findByRoleName("DEV");
-            System.out.println("The role");
-            System.out.println(roles.get(0).roleName);
-            AppUser user = new AppUser(google_sub, username, email, roles);
+            User user = new User(email, username, google_sub, roles);
             userRepository.save(user);
             users = userRepository.findByEmail(email);
         }
-        
         List<String> userRoles = (new ArrayList<>(users.get(0).getRoles())).stream().map((role) -> role.roleName)
                 .collect(Collectors.toList());
+        
         String[] rolesArray = userRoles.toArray(String[]::new);
-        System.out.println(userRoles);
-        String jwt_ = generateJWT(rolesArray, email);
-        return jwt_;
+        return generateJWT(rolesArray, email);
     }
 
     @GetMapping("public/jwks.json")
