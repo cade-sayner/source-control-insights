@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Enables manual execution
   push:
     branches:
-      - main
+      - mai
 
 jobs:
   build-and-deploy:
@@ -24,7 +24,6 @@ jobs:
       run: |
         cd server/source_control_insights
         mvn clean package -DskipTests
-
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -35,33 +34,28 @@ jobs:
       env:
         EC2_HOST: ${{ secrets.EC2_HOST }}
         EC2_USER: ${{ secrets.EC2_USER }}
-        
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        DATABASE_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
-        OAUTH_CLIENT_SECRET: ${{secrets.OAUTH_CLIENT_SECRET}}
-        OAUTH_CLIENT_ID: ${{secrets.OAUTH_CLIENT_ID}}
-        
+        OAUTH_CLIENT_ID:  ${{ secrets.OAUTH_CLIENT_ID }}
+        OAUTH_CLIENT_SECRET:  ${{ secrets.OAUTH_CLIENT_SECRET }}
+        DATABASE_CONNECTION_STRING :  ${{ secrets.DATABASE_CONNECTION_STRING }}
       run: |
         # Save SSH key
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
-
         # Copy JAR to EC2
-        scp -i private_key.pem server/source_control_insights/target/*.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/server.jar
-
+        scp -v -o StrictHostKeyChecking=no -i private_key.pem server/source_control_insights/target/*.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/server.jar
         # Connect and set up environment variables & run the server
         ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-          export APP_ENV=productio
-          export DATABASE_CONNECTION_STRING=
+          export PRIVATE_KEY=$PRIVATE_KEY
+          export DATABASE_CONNECTION_STRING=$DATABASE_CONNECTION_STRING
+          export OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID
+          export OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
           
           # Kill any running instance of the server
           pkill -f "java -jar /home/$EC2_USER/server.jar" || true
-
           # Run the JAR in the background
           nohup java -jar /home/$EC2_USER/server.jar > server.log 2>&1 &
-
           echo "Server is running..."
         EOF
-
     - name: Clean Up
       run: rm -f private_key.pem
