@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Enables manual execution
   push:
     branches:
-      - mai
+      - main
 
 jobs:
   build-and-deploy:
