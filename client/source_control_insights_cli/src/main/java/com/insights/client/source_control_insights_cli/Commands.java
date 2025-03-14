@@ -21,9 +21,8 @@ public class Commands {
     public String login() {
         try {
             CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights","config");
+            cliClientFilesHelper.createConfigFile();
             String token = loginService.login();
-            cliClientFilesHelper.createCliDirectory();
-            cliClientFilesHelper.fileExist();
             cliClientFilesHelper.writeToConfigFile(token);
         } catch (Exception e) {
             e.printStackTrace();

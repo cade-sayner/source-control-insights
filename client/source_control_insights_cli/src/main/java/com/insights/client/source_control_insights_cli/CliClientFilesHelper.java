@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import io.jsonwebtoken.Jwts;
 
 public class CliClientFilesHelper {
 
@@ -38,18 +39,14 @@ public class CliClientFilesHelper {
     return  cliDirectory;
   }
 
-  public void createCliDirectory() {
-    if(!getCliDirectory().exists()) {
-      getCliDirectory().mkdir();
-    }
-  }
-
-  public boolean fileExist() {
+  public void createConfigFile() {
     try {
       File file = getFile();
-      return file.createNewFile();
+      File cliDirectory = getCliDirectory();
+      getCliDirectory().mkdir();
+      file.createNewFile();
     }catch(IOException e) {
-      return false;
+
    }
   }
 
@@ -76,9 +73,5 @@ public class CliClientFilesHelper {
       e.printStackTrace();
       return "No token";
     }
-  }
-
-  public void decodeJWT() {
-
   }
 }
