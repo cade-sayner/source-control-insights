@@ -71,8 +71,8 @@ public class LoginService {
     }
 
     private String getAuthCode() {
-        String authClient = "176588836526-38a5rma3nkl6naeg9eea2gjda33du8ul.apps.googleusercontent.com";
-        String redirectUri = "http://localhost:3000/oauth2callback";
+        String authClient = System.getenv("OAUTH_CLIENT_ID");
+        String redirectUri = environment.getProperty("google.redirect-uri");
         try
         {
             String authUrl = String.format("https://accounts.google.com/o/oauth2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=openid phone email profile", authClient, redirectUri);
