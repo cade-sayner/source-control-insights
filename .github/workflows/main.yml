@@ -54,7 +54,7 @@ jobs:
           # Kill any running instance of the server
           pkill -f "java -jar /home/$EC2_USER/server.jar" || true
           # Run the JAR in the background
-          nohup java -jar /home/$EC2_USER/server.jar > server.log 2>&1 &
+          nohup java -jar /home/ec2-user/server.jar > server.log 2>&1 &
           echo "Server is running..."
         EOF
     - name: Clean Up
