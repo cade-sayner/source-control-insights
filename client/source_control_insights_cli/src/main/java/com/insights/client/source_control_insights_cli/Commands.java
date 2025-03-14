@@ -20,15 +20,15 @@ public class Commands {
     @ShellMethod("Logs in a user")
     public String login() {
         try {
-            System.out.println("Your JWT" + loginService.login());
+            CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights","config");
+            String token = loginService.login();
+            cliClientFilesHelper.createCliDirectory();
+            cliClientFilesHelper.fileExist();
+            cliClientFilesHelper.writeToConfigFile(token);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return "Something went wrong logging in";
         }
         return "Logged in successfully";
-    }
-
-    private boolean validateJwt(String jwt) {
-        return false;
     }
 }
