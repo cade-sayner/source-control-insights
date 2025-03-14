@@ -1,2 +1,4 @@
 source_control_insights_cli.log
-.vscode/
+.vscode/*
+.idea/*
+*/target/*
