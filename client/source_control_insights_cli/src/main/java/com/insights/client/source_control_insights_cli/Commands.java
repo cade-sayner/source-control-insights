@@ -27,4 +27,8 @@ public class Commands {
         }
         return "Logged in successfully";
     }
+
+    private boolean validateJwt(String jwt) {
+        return false;
+    }
 }
