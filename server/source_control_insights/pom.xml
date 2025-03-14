@@ -3,16 +3,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
-        <relativePath/> 
+        <groupId>com.insights</groupId>
+        <artifactId>source_control_insights</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <groupId>com.insights.client</groupId>
-    <artifactId>source_control_insights</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>source_control_insights</name>
+    <artifactId>server</artifactId>
+    <name>source_control_insights_server</name>
     <description>Demo project for Spring Boot</description>
+    <packaging>jar</packaging>
     <url/>
     <licenses>
         <license/>
@@ -56,11 +55,13 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
+            <version>12.8.1.jre11</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>3.4.3</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -70,28 +71,10 @@
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId> 
-            <version>0.11.5</version>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-database-postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
     </dependencies>
 
     <build>
@@ -99,6 +82,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

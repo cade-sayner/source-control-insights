@@ -3,16 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<groupId>com.insights</groupId>
+		<artifactId>source_control_insights</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<groupId>com.insights.client</groupId>
-	<artifactId>source_control_insights_cli</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>client</artifactId>
 	<name>source_control_insights_cli</name>
 	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
 	<url/>
 	<licenses>
 		<license/>
@@ -35,7 +34,6 @@
 			<groupId>org.springframework.shell</groupId>
 			<artifactId>spring-shell-starter</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -44,37 +42,33 @@
 		<dependency>
 			<groupId>org.springframework.shell</groupId>
 			<artifactId>spring-shell-starter-test</artifactId>
+			<version>${spring-shell.version}</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-	<dependencyManagement>
-		<dependencies>
 			<dependency>
 				<groupId>org.springframework.shell</groupId>
 				<artifactId>spring-shell-dependencies</artifactId>
 				<version>${spring-shell.version}</version>
 				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
-		</dependencies>
-	</dependencyManagement>
+	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.4.3</version>
 			</plugin>
-		 <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>3.11.0</version>
-		  <configuration>
-		   <compilerArgs>
-		    <arg>--enable-preview</arg>
-		   </compilerArgs>
-		  </configuration>
-		 </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.0</version>
+				<configuration>
+					<source>15</source>
+					<target>15</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
