@@ -3,6 +3,8 @@ package com.insights.client.source_control_insights.Entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +24,7 @@ public class Commit {
     @JoinColumn(name = "contributor_id", nullable = false)
     private User contributor;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "repo_id", nullable = false)
     private Repository repository;

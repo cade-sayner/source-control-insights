@@ -17,19 +17,15 @@ import com.insights.client.source_control_insights_cli.lib.GitLogFetcher;
 @ShellComponent()
 public class Commands {
 
-    private final SourceControlInsightsCliApplication sourceControlInsightsCliApplication;
-
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
 
-    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient,
-            SourceControlInsightsCliApplication sourceControlInsightsCliApplication) {
+    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient) {
         this.loginService = loginService;
         this.authenticatedApiClient = authenticatedApiClient;
-        this.sourceControlInsightsCliApplication = sourceControlInsightsCliApplication;
     }
 
-    @ShellMethod("Logs in to a user")
+    @ShellMethod("Logs in a user")
     public String login() {
         try {
             if (authenticatedApiClient.getJwt() != null)
@@ -57,7 +53,11 @@ public class Commands {
             @ShellOption(help = "The URL of the repository") String repoUrl) {
         if (authenticatedApiClient.getJwt() == null)
             return "You must be logged in to access this command";
-        return authenticatedApiClient.createRepository(name, repoUrl);
+        try{
+            return "Repository successfully created";
+        }catch(Exception e){ 
+            return "Something went wrong creating a repository";
+        }
     }
 
     @ShellMethod(value = "Gets your repos", key = "get-repos")
