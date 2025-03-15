@@ -1,32 +1,10 @@
-# Source Control Insights CLI Commands
-
-This CLI provides commands for managing repositories and retrieving source control insights.
+# Source Control Insights CLI
 
 ## Commands
 
-login  
-Logs in the user.
-
-jwt  
-Prints the currently logged-in user's JWT.
-
-create_repo <name> <repoUrl>  
-Creates a new repository.  
-- `<name>`: The name of the repository.  
-- `<repoUrl>`: The URL of the repository.
-
-get-repos  
-Fetches and displays the user's repositories.
-
-update-repo <repoId> <path>  
-Updates the specified repository with the most up-to-date information from the given Git repository path.  
-- `<repoId>`: The ID of the repository.  
-- `<path>`: The local path to the Git repository.
-
-get-latest-commit <repoId>  
-Retrieves the date of the latest commit for a repository.  
-- `<repoId>`: The ID of the repository.
-
-## Notes  
-- You must be logged in to use commands that interact with repositories.  
-- If you are not logged in, you will be prompted to log in before using certain commands.
+* `login`: Logs in a user. Example: `login`
+* `jwt`: Prints the logged-in user's JWT. Example: `jwt`
+* `create-repo --name <name> --repoUrl <url>`: Creates a repository. Example: `create-repo --name my-repo --repoUrl https://github.com/user/repo`
+* `get-repos`: Lists repositories. Example: `get-repos`
+* `update-repo <repo_id> -p <path>`: Updates a repository. Example: `update-repo 123 -p /path/to/repo`
+* `get-latest-commit <repo_id>`: Gets latest commit date. Example: `get-latest-commit 123`
