@@ -7,9 +7,9 @@ import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
 
-
 @ShellComponent()
 public class Commands {
+
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
 
@@ -18,7 +18,7 @@ public class Commands {
         this.authenticatedApiClient = authenticatedApiClient;
     }
 
-    @ShellMethod("Logs in a user")
+    @ShellMethod("Logs in to a user")
     public String login() {
         try {
             if(authenticatedApiClient.getJwt() != null) return "You are already logged in";
