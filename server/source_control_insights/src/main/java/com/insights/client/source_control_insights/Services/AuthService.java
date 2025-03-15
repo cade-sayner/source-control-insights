@@ -46,7 +46,7 @@ public class AuthService {
                 .collect(Collectors.toList());
 
         String[] rolesArray = userRoles.toArray(String[]::new);
-        return generateJWT(rolesArray, email);
+        return generateJWT(rolesArray, email, google_sub);
     }
 
 }

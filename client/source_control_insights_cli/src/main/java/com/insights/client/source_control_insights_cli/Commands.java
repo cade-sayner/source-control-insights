@@ -2,6 +2,7 @@ package com.insights.client.source_control_insights_cli;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
@@ -40,10 +41,8 @@ public class Commands {
     }
 
     @ShellMethod("Creates a repository")
-    public String create_repo(){
+    public String create_repo(@ShellOption String name, @ShellOption String repoUrl){
         if(authenticatedApiClient.getJwt() == null) return "You must be logged in to access this command";
-        return "Not yet implemented";
-        
+        return authenticatedApiClient.createRepository(name, repoUrl);
     }
-
 }

@@ -17,16 +17,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticatedApiClient {
+
+
     public final HttpClient client = HttpClient.newHttpClient();
     private String jwt;
 
     @Autowired
     private Environment environment;
 
+    public String createRepository(String name, String repoUrl){
+        return post("/v1/createrepo/" + name, repoUrl).body();
+    }
+
     private HttpResponse<String> post(String endpoint, String json) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(environment.getProperty("google.redirect-uri")  + endpoint))
+                    .uri(URI.create(environment.getProperty("api.endpoint")  + endpoint))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + jwt)
                     .POST(BodyPublishers.ofString(json, StandardCharsets.UTF_8))
