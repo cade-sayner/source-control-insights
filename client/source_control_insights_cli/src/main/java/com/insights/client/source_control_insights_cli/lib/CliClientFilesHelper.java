@@ -1,12 +1,11 @@
-package com.insights.client.source_control_insights_cli;
+package com.insights.client.source_control_insights_cli.lib;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
-import io.jsonwebtoken.Jwts;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class CliClientFilesHelper {
 

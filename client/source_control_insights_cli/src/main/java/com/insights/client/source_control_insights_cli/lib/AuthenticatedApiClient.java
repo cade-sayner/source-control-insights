@@ -1,4 +1,4 @@
-package com.insights.client.source_control_insights_cli;
+package com.insights.client.source_control_insights_cli.lib;
 
 import java.net.URI;
 import java.net.http.HttpClient;
