@@ -2,7 +2,6 @@ package com.insights.client.source_control_insights.Controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insights.client.source_control_insights.Repositories.RepoRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import com.insights.client.source_control_insights.Repositories.CommitRepository;
@@ -13,7 +12,7 @@ import com.insights.client.source_control_insights.Entities.User;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,13 +24,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.fasterxml.jackson.databind.deser.impl.JDKValueInstantiators;
 
 @RestController
 public class RepositoryController {
-
 
     private final RepoRepository repoRepository;
     private final CommitRepository commitRepository;
@@ -42,7 +37,7 @@ public class RepositoryController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("v1/repo/{name}")
+    @PostMapping("v1/repos/{name}")
     public ResponseEntity<?> postRepo(@PathVariable String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
         try {
             if (jwt == null) {
@@ -51,9 +46,8 @@ public class RepositoryController {
             String sub = jwt.getClaim("sub");
             Repository repo = new Repository(name, "Github", sub, repo_url, java.time.Instant.now());
             repoRepository.save(repo);
-            return ResponseEntity.ok("Repository created successfully.");
+            return ResponseEntity.ok(repo);
         } catch (Exception e) {
-            e.printStackTrace(); // Log the exception for debugging
             return ResponseEntity.status(500).body("An error occurred while creating the repository.");
         }
     }
@@ -61,9 +55,17 @@ public class RepositoryController {
     @GetMapping("v1/repos")
     public ResponseEntity<?> getRepos(@AuthenticationPrincipal Jwt jwt) {
         try{
-            List<Repository> repos = repoRepository.findByGoogleId(jwt.getClaim("sub"));
+            List<Repository> repos;
+            if(((List<String>)jwt.getClaim("scope")).contains("PROJ_MAN")){
+                repos = repoRepository.findByGoogleId(jwt.getClaim("sub"));
+            }else{ 
+                // just a normal dev so just give them the repositories that they have commited to
+                System.out.println("normal dev login");
+                repos = repoRepository.findByContributorGoogleId(jwt.getClaim("sub"));
+            }
             return ResponseEntity.ok(repos);
         }catch(Exception e){
+            System.out.println(e);
             return ResponseEntity.status(500).body("An error occurred while trying to get your repos");
         }
     }
@@ -71,7 +73,7 @@ public class RepositoryController {
     @GetMapping("v1/repos/latest/{repoId}")
     public ResponseEntity<?> getLatestCommit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId){ 
         List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
-        if(commits.size() == 0){ 
+        if(commits.isEmpty()){ 
             return ResponseEntity.ok("{\"latestCommit\": 0}");
         }
         else{
@@ -83,9 +85,8 @@ public class RepositoryController {
     public ResponseEntity<?> patchRepos(@AuthenticationPrincipal Jwt jwt, @RequestBody String body, @PathVariable UUID repoId){ 
         try{    
             String[] rows = body.split("\n");
-            System.out.println("The rows are");
-            System.out.println(Arrays.toString(rows));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss X");
+            List<Commit> commits = new ArrayList<>();
             for(String row : rows){ 
                 // make a commit for this row
                 String[] cols = row.split(",");
@@ -102,8 +103,9 @@ public class RepositoryController {
                 Repository repo = repoList.get(0);
                 Commit commit = new Commit(user, repo, commitHash, commitMessage, date.toInstant());
                 commitRepository.save(commit);
+                commits.add(commit);
             }
-            return ResponseEntity.ok("You have successfully updated the repo's history");
+            return ResponseEntity.ok(commits);
         }catch(Exception e){ 
             return ResponseEntity.status(500).body("Failed to update the repo");
         }

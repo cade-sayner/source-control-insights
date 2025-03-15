@@ -25,56 +25,57 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class AuthenticatedApiClient {
 
-
     public final HttpClient client = HttpClient.newHttpClient();
     private String jwt;
 
     @Autowired
     private Environment environment;
 
-    public String createRepository(String name, String repoUrl){
+    public String createRepository(String name, String repoUrl) {
         return post("/v1/repos/" + name, repoUrl).body();
     }
 
-    public String getRepositories(){ 
+    public String getRepositories() {
         return get("/v1/repos", new HashMap<>()).body();
     }
 
-    public String getLatestCommitDate(String repoId){ 
+    public String getLatestCommitDate(String repoId) {
         return get("/v1/repos/latest/" + repoId, new HashMap<>()).body();
     }
 
-    public String updateRepo(String repoId, String logCsv) throws Exception{ 
+    public String updateRepo(String repoId, String logCsv) throws Exception {
         String latestCommitResponse = getLatestCommitDate(repoId);
         ObjectMapper om = new ObjectMapper();
-        String latestCommitDateString = om.readValue(latestCommitResponse, new TypeReference<Map<String, String>>(){}).get("latestCommit");
-        OffsetDateTime latestCommitDate = latestCommitDateString.equals("0") ? OffsetDateTime.MIN : OffsetDateTime.parse(latestCommitDateString);
+        String latestCommitDateString = om.readValue(latestCommitResponse, new TypeReference<Map<String, String>>() {
+        }).get("latestCommit");
+        OffsetDateTime latestCommitDate = latestCommitDateString.equals("0") ? OffsetDateTime.MIN
+                : OffsetDateTime.parse(latestCommitDateString);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss X");
-        List<String> rowSubset = new ArrayList<String>();
+        List<String> rowSubset = new ArrayList<>();
         List<String> rows = List.of(logCsv.split("\n"));
-        for(int i = 1; i < rows.size(); i++){ 
+        for (int i = 1; i < rows.size(); i++) {
             OffsetDateTime time = OffsetDateTime.parse(rows.get(i).split(",")[2], formatter);
-            if(latestCommitDate.compareTo(time) < 0){ 
+            if (latestCommitDate.compareTo(time) < 0) {
                 rowSubset.add(rows.get(i));
             }
         }
-        if(rowSubset.size() == 0){ 
+        if (rowSubset.isEmpty()) {
             return "The repository is up to date";
         }
         String body = String.join("\n", rowSubset);
-        return patch("/v1/repos/"+repoId, body).body();
+        return patch("/v1/repos/" + repoId, body).body();
     }
 
     private HttpResponse<String> post(String endpoint, String json) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(environment.getProperty("api.endpoint")  + endpoint))
+                    .uri(URI.create(environment.getProperty("api.endpoint") + endpoint))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + jwt)
                     .POST(BodyPublishers.ofString(json, StandardCharsets.UTF_8))
                     .build();
-            
+
             return client.send(request, BodyHandlers.ofString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,7 +91,7 @@ public class AuthenticatedApiClient {
                     .header("Authorization", "Bearer " + jwt)
                     .method("PATCH", BodyPublishers.ofString(json, StandardCharsets.UTF_8))
                     .build();
-            
+
             return client.send(request, BodyHandlers.ofString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,11 +99,11 @@ public class AuthenticatedApiClient {
         }
     }
 
-    public void setJwt(String jwt){
+    public void setJwt(String jwt) {
         this.jwt = jwt;
     }
 
-    public String getJwt(){
+    public String getJwt() {
         return this.jwt;
     }
 
@@ -112,8 +113,8 @@ public class AuthenticatedApiClient {
             for (Map.Entry<String, String> entry : queryParams.entrySet()) {
                 query.add(entry.getKey() + "=" + entry.getValue());
             }
-            
-            URI uri = URI.create(environment.getProperty("api.endpoint") +  endpoint + "?" + query.toString());
+
+            URI uri = URI.create(environment.getProperty("api.endpoint") + endpoint + "?" + query.toString());
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .header("Authorization", "Bearer " + jwt)

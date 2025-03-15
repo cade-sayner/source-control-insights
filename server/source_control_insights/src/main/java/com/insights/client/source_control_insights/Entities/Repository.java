@@ -1,12 +1,16 @@
 package com.insights.client.source_control_insights.Entities;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,6 +37,10 @@ public class Repository {
         this.repoUrl = repoUrl;
         this.createdAt = createdAt;
     }
+
+    @JsonIgnore
+    @OneToMany(mappedBy="repository")
+    public List<Commit> commits;
 
     public Repository() {}
 
