@@ -20,7 +20,20 @@ public class Repository {
 
     @Column(nullable = false)
     private String provider;
+     
+    private String creatorGoogleId;
 
-    @Column(nullable = false)
+    private String repoUrl;
+
     private java.time.Instant createdAt;
+
+    public Repository(String repoName, String provider, String creatorGoogleId, String repo_url, java.time.Instant createdAt){
+        this.repoName = repoName;
+        this.provider = provider;
+        this.creatorGoogleId = creatorGoogleId;
+        this.repoUrl = repo_url;
+        this.createdAt = createdAt;
+    }
+
+    public Repository(){}
 }

@@ -1,6 +1,6 @@
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    google_id UUID UNIQUE NOT NULL,
+    google_id varchar(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL
 );
@@ -10,6 +10,7 @@ CREATE TABLE repositories (
     repo_name VARCHAR(255) NOT NULL,
     repo_url VARCHAR(255) NOT NULL,
     provider VARCHAR(50) NOT NULL,
+    creator_google_id varchar(50),
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

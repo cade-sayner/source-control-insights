@@ -20,7 +20,7 @@ public class JwtHelpers {
         return claimsSet.getClaims();
     }
 
-    public static String generateJWT(String[] scopes, String subject) throws Exception {
+    public static String generateJWT(String[] scopes, String subject, String google_sub) throws Exception {
         String base64Key = System.getenv("PRIVATE_KEY");
 
         RSAPrivateKey privateKey = readPKCS8PrivateKey(base64Key);
@@ -28,6 +28,7 @@ public class JwtHelpers {
         String jwt = Jwts.builder()
                 .setSubject(subject)
                 .setIssuer("insights.com")
+                .claim("sub", google_sub)
                 .claim("scope", scopes)
                 .signWith(privateKey)
                 .compact();
@@ -45,8 +46,4 @@ public class JwtHelpers {
         return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 
-    public static void main(String[] args) throws Exception {
-        String[] scopes = { "User" };
-        generateJWT(scopes, "cade");
-    }
 }

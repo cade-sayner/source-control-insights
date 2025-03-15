@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import com.insights.client.source_control_insights.Services.GoogleAuthService;
+import com.insights.client.source_control_insights.Services.GoogleAuthService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,57 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insights.client.source_control_insights.Entities.Role;
-import com.insights.client.source_control_insights.Entities.User;
 import com.insights.client.source_control_insights.Models.LoginRequestBody;
-import com.insights.client.source_control_insights.Repositories.RoleRepository;
-import com.insights.client.source_control_insights.Repositories.UserRepository;
-import com.insights.client.source_control_insights.Services.GoogleAuthService;
-import static com.insights.client.source_control_insights.lib.JwtHelpers.extractClaims;
-import static com.insights.client.source_control_insights.lib.JwtHelpers.generateJWT;
-
+import com.insights.client.source_control_insights.Services.AuthService;
 
 @RestController
 public class AuthController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public AuthController(RoleRepository roleRepository, UserRepository userRepository) {
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("public/auth")
-    public String getLogin(@RequestBody LoginRequestBody loginReq, GoogleAuthService googleAuthService)
-            throws Exception {
-        System.out.println(loginReq.getAuthCode());
-        System.out.println(loginReq.authCode);
-
-        // get the google jwt
-        String jwt = googleAuthService.getJWT(loginReq.getAuthCode());
-        Map<String, Object> claims = extractClaims(jwt);
-       
-        // get info from the user's jwt
-        String email = claims.get("email").toString();
-        String google_sub = claims.get("sub").toString();
-        String username = claims.get("name").toString();
-    
-        // look up their role in the database, if they don't exist yet then 
-        // create them and just assign them the dev role
-        List<User> users = userRepository.findByGoogleId(google_sub);
-        if (users.isEmpty()) {
-            List<Role> roles = roleRepository.findByRoleName("DEV");
-            User user = new User(email, username, google_sub, roles);
-            userRepository.save(user);
-            users = userRepository.findByEmail(email);
+    public ResponseEntity<String> getLogin(@RequestBody LoginRequestBody loginReq, GoogleAuthService googleAuthService) {
+        try {
+            String token = authService.login(loginReq, googleAuthService);
+            return ResponseEntity.ok(token); 
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(iae.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An internal error occurred."); 
         }
-        List<String> userRoles = (new ArrayList<>(users.get(0).getRoles())).stream().map((role) -> role.roleName)
-                .collect(Collectors.toList());
-        
-        String[] rolesArray = userRoles.toArray(String[]::new);
-        return generateJWT(rolesArray, email);
     }
 
     @GetMapping("public/jwks.json")
