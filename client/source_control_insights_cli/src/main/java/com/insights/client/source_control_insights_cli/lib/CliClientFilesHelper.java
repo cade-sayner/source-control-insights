@@ -12,11 +12,13 @@ public class CliClientFilesHelper {
   private final String fileNameInput;
   private final String applicationDirInput;
   private final String homeDir;
+  private final String userOperatingSystem;
 
   public CliClientFilesHelper(String applicationDir, String fileName) {
     this.fileNameInput = fileName.toLowerCase();
     this.applicationDirInput = applicationDir.toLowerCase();
     this.homeDir = System.getProperty("user.home");
+    this.userOperatingSystem = System.getProperty("os.name").toLowerCase();
   }
 
   private File getFile() {
@@ -25,22 +27,21 @@ public class CliClientFilesHelper {
   }
 
   private String getFileName() {
-    String os = System.getProperty("os.name").toLowerCase();
-    return os.contains("win")
+    return this.userOperatingSystem.contains("win")
       ? String.format("%s\\%s\\%s", this.homeDir, this.applicationDirInput, this.fileNameInput)
       : String.format("%s/%s/%s", this.homeDir, this.applicationDirInput, this.fileNameInput);
   }
 
   private File getCliDirectory() {
-    return new File(String.format("%s/%s", this.homeDir, this.applicationDirInput));
+    return this.userOperatingSystem.contains("win")
+            ? new File(String.format("%s\\%s", this.homeDir, this.applicationDirInput))
+            : new File(String.format("%s/%s", this.homeDir, this.applicationDirInput));
   }
 
   public void createConfigFile() {
     try {
-      File file = getFile();
-      File cliDirectory = getCliDirectory();
       getCliDirectory().mkdir();
-      file.createNewFile();
+      getFile().createNewFile();
     }catch(IOException _) {
 
    }
