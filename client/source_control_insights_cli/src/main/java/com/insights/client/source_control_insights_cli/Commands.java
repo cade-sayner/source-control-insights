@@ -33,7 +33,7 @@ public class Commands {
             if(loginService.isValidToken(token)) {
                 authenticatedApiClient.setJwt(token);
                 return "You are already logged in";
-            };
+            }
             if (authenticatedApiClient.getJwt() != null)
                 return "You are already logged in";
 
