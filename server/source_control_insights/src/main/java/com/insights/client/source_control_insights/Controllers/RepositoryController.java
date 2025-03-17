@@ -99,6 +99,13 @@ public class RepositoryController {
                 OffsetDateTime date = OffsetDateTime.parse(cols[2], formatter);
                 String email = cols[3];
                 String commitMessage = cols[4];
+                int filesChanged = 0;
+                int insertions = 0;
+                int deletions = 0;
+                try{filesChanged = Integer.parseInt(cols[5].split(" ")[0]);}catch(Exception e){}
+                try{insertions = Integer.parseInt(cols.length >= 7 ? cols[6].strip().split(" ")[0] : "0");}catch(Exception e){}
+                try{deletions = Integer.parseInt(cols.length >= 8 ? cols[7].strip().split(" ")[0] : "0");}catch(Exception e){}
+        
                 List<User> contributorList = userRepository.findByEmail(email);
                 List<Repository> repoList = repoRepository.findByRepoId(repoId);
                 if(contributorList.isEmpty() || repoList.isEmpty()){ 
@@ -106,11 +113,12 @@ public class RepositoryController {
                 }
                 User user = contributorList.get(0);
                 Repository repo = repoList.get(0);
-                Commit commit = new Commit(user, repo, commitHash, commitMessage, date.toInstant());
+                Commit commit = new Commit(user, repo, commitHash, commitMessage, date.toInstant(),filesChanged, insertions, deletions);
                 commitRepository.save(commit);
             }
             return ResponseEntity.ok("You have successfully updated the repo's history");
         }catch(Exception e){ 
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to update the repo");
         }
     }

@@ -12,7 +12,7 @@ public class ActivitySummaryRepo extends ActivitySummary {
     }
 
     public ActivitySummaryRepo(ActivitySummary summary, float percentile){ 
-        super(summary.getUsername(), summary.getTotalCommits(), summary.getCommitVelocityPerDay(), summary.getCommitVelocityPerWeek(),summary.getActiveDays(), summary.getMostActiveDay(), summary.getLastCommitDate());
+        super(summary.getUsername(), summary.getTotalCommits(), summary.getCommitVelocityPerDay(), summary.getCommitVelocityPerWeek(),summary.getActiveDays(), summary.getMostActiveDay(), summary.getLastCommitDate(), summary.getFilesChanged(), summary.getInsertions(), summary.getDeletions(), summary.getNetChanges());
         this.percentile = percentile;
     }
 }

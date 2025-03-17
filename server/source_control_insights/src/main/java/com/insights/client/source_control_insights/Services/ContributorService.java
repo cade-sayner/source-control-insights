@@ -72,8 +72,13 @@ public class ContributorService {
         var mostActiveDay = groupedByDay.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null).getKey()
                 .toString();
         var lastCommitDay = dates.getLast().toString();
+
+        int totalFilesChanged = commits.stream().mapToInt(Commit::getFilesChanged).sum();
+        int totalInsertions = commits.stream().mapToInt(Commit::getInsertions).sum();
+        int totalDeletions = commits.stream().mapToInt(Commit::getDeletions).sum();
+        int netChanges = totalInsertions - totalDeletions;
         return new ActivitySummary(username, totalCommits, commitVelocityDaily, commitVelocityWeekly, activeDays,
-                mostActiveDay, lastCommitDay);
+                mostActiveDay, lastCommitDay,totalFilesChanged, totalInsertions, totalDeletions, netChanges);
     }
 
     public Map<LocalDate, Long> getActivityByDay(User user) {
