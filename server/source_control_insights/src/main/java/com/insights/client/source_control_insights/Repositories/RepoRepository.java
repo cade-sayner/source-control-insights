@@ -16,6 +16,7 @@ public interface RepoRepository extends JpaRepository<Repository, java.util.UUID
 
     @Query("SELECT DISTINCT r FROM Repository r JOIN r.commits c WHERE c.contributor.googleId = :userId")
     List<Repository> findByContributorGoogleId(@Param("userId") String googleId);
+
 }
 
 
