@@ -5,17 +5,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insights.client.source_control_insights.Repositories.RepoRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
+import com.insights.client.source_control_insights.Services.ContributorService;
 import com.insights.client.source_control_insights.Repositories.CommitRepository;
 import com.insights.client.source_control_insights.Entities.Commit;
 import com.insights.client.source_control_insights.Entities.Repository;
 import com.insights.client.source_control_insights.Entities.User;
+import com.insights.client.source_control_insights.Models.LeaderBoardEntry;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,20 +31,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.fasterxml.jackson.databind.deser.impl.JDKValueInstantiators;
 
 @RestController
 public class RepositoryController {
 
-
     private final RepoRepository repoRepository;
     private final CommitRepository commitRepository;
     private final UserRepository userRepository;
-    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository) {
+    private final ContributorService contributorService;
+
+    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository, ContributorService contributerService) {
         this.repoRepository = repoRepository;
         this.commitRepository = commitRepository;
         this.userRepository = userRepository;
+        this.contributorService = contributerService;
     }
 
     @PostMapping("v1/repo/{name}")
@@ -108,4 +114,33 @@ public class RepositoryController {
             return ResponseEntity.status(500).body("Failed to update the repo");
         }
     }
+
+    @GetMapping("v1/repository/{repoId}/leaderboard")
+    public ResponseEntity getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
+        // get the users that belong to the repo
+        // TODO: move this to a static somewhere
+        Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
+        if(! names.contains(sortBy)) return ResponseEntity.status(400).body("Invalid sorting option.");
+
+        var comparator = switch(sortBy){ 
+            case "commits" -> LeaderBoardEntry.BY_TOTAL_COMMITS;
+            case "days" -> LeaderBoardEntry.BY_COMMIT_DAYS;
+            case "velocity_days" -> LeaderBoardEntry.BY_COMMIT_VELOCITY_DAYS;
+            case "velocity_weeks" -> LeaderBoardEntry.BY_COMMIT_VELOCITY_WEEKS;
+            default -> LeaderBoardEntry.BY_TOTAL_COMMITS;
+        };
+
+        List<User> users = userRepository.findDistinctContributorsByRepositoryId(repoId);
+        for(User user : users){ 
+            contributorService.getActivityForRepo(user, repoId);
+        }
+
+        List<LeaderBoardEntry> sortedLb = users.stream().map(u -> new LeaderBoardEntry(contributorService.getActivityForRepo(u, repoId))).sorted(comparator.reversed()).collect(Collectors.toList());
+        for(int i = 0; i < sortedLb.size(); i++){ 
+            sortedLb.get(i).ranking = i+1;
+        }
+
+        return ResponseEntity.ok(sortedLb);
+    }
+    
 }
