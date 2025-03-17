@@ -21,21 +21,18 @@ public class CliClientFilesHelper {
 
   private File getFile() {
     String fileName = getFileName();
-    File file = new File(fileName);
-    return file;
+    return new File(fileName);
   }
 
   private String getFileName() {
     String os = System.getProperty("os.name").toLowerCase();
-    String fileName = os.contains("win")
+    return os.contains("win")
       ? String.format("%s\\%s\\%s", this.homeDir, this.applicationDirInput, this.fileNameInput)
       : String.format("%s/%s/%s", this.homeDir, this.applicationDirInput, this.fileNameInput);
-    return fileName;
   }
 
   private File getCliDirectory() {
-    File cliDirectory = new File(String.format("%s/%s", this.homeDir, this.applicationDirInput));
-    return  cliDirectory;
+    return new File(String.format("%s/%s", this.homeDir, this.applicationDirInput));
   }
 
   public void createConfigFile() {
@@ -44,7 +41,7 @@ public class CliClientFilesHelper {
       File cliDirectory = getCliDirectory();
       getCliDirectory().mkdir();
       file.createNewFile();
-    }catch(IOException e) {
+    }catch(IOException _) {
 
    }
   }
@@ -54,12 +51,12 @@ public class CliClientFilesHelper {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(getFile()))) {
             bufferedWriter.write(content);
         }
-    } catch(IOException e) {
+    } catch(IOException _) {
 
     }
   }
 
-  private String getToken() {
+  public String getToken() {
     String filePath = getFileName();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
@@ -71,6 +68,16 @@ public class CliClientFilesHelper {
     } catch (IOException e) {
       e.printStackTrace();
       return "No token";
+    }
+  }
+
+  public static boolean isGitRepo() {
+    try {
+      ProcessBuilder processBuilder = new ProcessBuilder("git", "--version");
+      processBuilder.start();
+      return true;
+    } catch(IOException _) {
+      return false;
     }
   }
 }
