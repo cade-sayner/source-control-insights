@@ -1,11 +1,11 @@
 package com.insights.client.source_control_insights_cli.lib;
 
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
 
 import static com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper.isGitRepo;
 

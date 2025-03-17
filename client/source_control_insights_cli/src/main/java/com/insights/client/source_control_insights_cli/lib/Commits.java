@@ -1,9 +1,9 @@
 package com.insights.client.source_control_insights_cli.lib;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class Commits {
