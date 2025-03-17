@@ -3,6 +3,7 @@ package com.insights.client.source_control_insights_cli;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -13,16 +14,19 @@ import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
 import com.insights.client.source_control_insights_cli.lib.GitLogFetcher;
+import com.insights.client.source_control_insights_cli.lib.Commits;
 
 @ShellComponent()
 public class Commands {
 
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
+    private final Commits commits;
 
-    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient) {
+    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient, Commits commits) {
         this.loginService = loginService;
         this.authenticatedApiClient = authenticatedApiClient;
+        this.commits = commits;
     }
 
     @ShellMethod("Logs in a user")
@@ -109,5 +113,10 @@ public class Commands {
             resultString += "\n";
         }
         return resultString;
+    }
+
+    @ShellMethod(value="Get user repo url", key="get-repo")
+    public String getRepoUrl() {
+        return commits.getRepoUrl();
     }
 }

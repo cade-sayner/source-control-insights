@@ -28,6 +28,7 @@
 	<properties>
 		<java.version>23</java.version>
 		<spring-shell.version>3.4.0</spring-shell.version>
+		<start-class>com.insights.client.source_control_insights_cli.SourceControlInsightsCliApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -88,6 +89,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+            <mainClass>com.insights.client.source_control_insights_cli.SourceControlInsightsCliApplication</mainClass>
+            <layout>JAR</layout>
+        </configuration>
+				<executions>
+						<execution>
+							<goals>
+									<goal>repackage</goal>
+							</goals>
+						</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

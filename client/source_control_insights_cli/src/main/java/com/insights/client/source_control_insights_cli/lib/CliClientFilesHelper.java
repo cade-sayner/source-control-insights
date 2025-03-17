@@ -1,8 +1,5 @@
 package com.insights.client.source_control_insights_cli.lib;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -81,6 +78,7 @@ public class CliClientFilesHelper {
       processBuilder.start();
       return true;
     } catch(IOException _) {
+      System.out.println("This is not a git repo, ensure you are in a git repo before running this command.");
       return false;
     }
   }

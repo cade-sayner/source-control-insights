@@ -1,24 +1,23 @@
 package com.insights.client.source_control_insights_cli.lib;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import static com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper.isGitRepo;
-import static com.insights.client.source_control_insights_cli.lib.ProcessOutputReader.getCommandOutput;
+import java.util.List;
 
-import java.io.IOException;
-
+@Component
 public class Commits {
 
-    public String getUserRepoUrl() {
-        StringBuilder commandOutput = new StringBuilder();
-        if(isGitRepo()) {
-            try {
-                ProcessBuilder processBuilder = new ProcessBuilder("git", "remote", "get-url", "origin");
-                Process process = processBuilder.start();
-                return getCommandOutput(commandOutput, process);
-            } catch (IOException _) {
-                return "That did not work, try again";
-            }
-        }
-        return "That did not work, try again";
+    private final ProcessOutput processOutput;
+
+    @Autowired
+    public Commits(ProcessOutput processOutput) {
+        this.processOutput = processOutput;
     }
+
+    public String getRepoUrl() {
+        return processOutput.getCommand(List.of("git", "remote", "get-url", "origin"));
+    }
+
+    public String getUserLocalRepoRoot() { return processOutput.getCommand(List.of("git", "rev-parse", "--show-toplevel")); }
 }
