@@ -31,7 +31,7 @@ public class Commands {
             CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
             cliClientFilesHelper.createConfigFile();
             String token = cliClientFilesHelper.getToken();
-            if(!token.equalsIgnoreCase("no token") && loginService.isValidToken(token)) {
+            if(loginService.isValidToken(token)) {
                 authenticatedApiClient.setJwt(token);
                 return "You are already logged in";
             };
@@ -39,7 +39,6 @@ public class Commands {
                 return "You are already logged in";
 
             token = loginService.login();
-            System.out.println(token);
             // write the jwt to a local file, set the jwt on the authenticated client
             cliClientFilesHelper.writeToConfigFile(token);
             authenticatedApiClient.setJwt(token);

@@ -12,7 +12,7 @@ import com.insights.client.source_control_insights.Repositories.RoleRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.extractClaims;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.generateJWT;
-import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.time.Instant;
 
 @Service

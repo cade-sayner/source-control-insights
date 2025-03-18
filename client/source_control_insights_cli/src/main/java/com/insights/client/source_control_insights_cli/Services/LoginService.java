@@ -120,7 +120,7 @@ public class LoginService {
 
     public boolean isValidToken(String jwt) {
         try {
-            return SignedJWT.parse(jwt).getState().toString().equals("SIGNED");
+            return SignedJWT.parse(jwt).getJWTClaimsSet().getExpirationTime().before(new java.util.Date());
         } catch(ParseException _) {
             return false;
         }
