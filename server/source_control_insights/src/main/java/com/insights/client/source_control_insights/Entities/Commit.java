@@ -38,15 +38,51 @@ public class Commit {
     @Column(nullable = false)
     private Instant commitTimestamp;
 
+    @Column(name = "files_changed")
+    private int filesChanged;
+
+    @Column(name = "insertions")
+    private int insertions;
+
+    @Column(name = "deletions")
+    private int deletions;
+
+    public int getFilesChanged(){
+        return this.filesChanged;
+    }
+
+    public void setFilesChanged(int filesChanged){
+        this.filesChanged = filesChanged;
+    }
+
+    public int getInsertions(){
+        return insertions;
+    }
+
+    public void setInsertions(int insertions){
+        this.insertions = insertions;
+    }
+
+    public int getDeletions(){
+        return this.deletions;
+    }
+
+    public void setDeletions(int deletions){
+        this.deletions = deletions;
+    }
+
     // Constructors
     public Commit() {}
 
-    public Commit(User contributer, Repository repository, String commitHash, String message, Instant commitTimestamp) {
+    public Commit(User contributer, Repository repository, String commitHash, String message, Instant commitTimestamp, int filesChanged, int insertions, int deletions) {
         this.contributor = contributer;
         this.repository = repository;
         this.commitHash = commitHash;
         this.message = message;
         this.commitTimestamp = commitTimestamp;
+        this.filesChanged = filesChanged;
+        this.insertions = insertions;
+        this.deletions = deletions;
     }
 
     // Getters and Setters
