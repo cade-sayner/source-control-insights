@@ -30,10 +30,8 @@ public class ContributorController {
         this.repoRepository = repoRepository;
     }
 
-
-    @GetMapping("contributor/activity")
+    @GetMapping("v1/contributor/activity")
     public ResponseEntity<?> getContributorActivity(@AuthenticationPrincipal Jwt jwt) {
-    
         List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
         if(userList.isEmpty()){ 
             return ResponseEntity.status(500).body("User not found");
@@ -41,10 +39,9 @@ public class ContributorController {
         return ResponseEntity.ok(contributorService.getActivitySummary(userList.getFirst()));
     }
 
-    @GetMapping("contributor/activity/{repoId}")
+    @GetMapping("v1/contributor/activity/{repoId}")
     public ResponseEntity<?> getContributorActivityByRepo(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId) {
         List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
-        // TODO: Do a check here to see that the user actually belongs to the repo
         if(userList.isEmpty()){ 
             return ResponseEntity.status(500).body("User not found");
         }
@@ -53,12 +50,28 @@ public class ContributorController {
         if(repositories.stream().filter(repo -> repo.getRepoId().equals(repoId)).collect(Collectors.toList()).isEmpty()){ 
             return ResponseEntity.status(404).body("Repo not found");
         }
-        return ResponseEntity.ok(contributorService.getActivityForRepo(user, repoId));
+        return ResponseEntity.ok(contributorService.getActivitySummaryForRepo(user, repoId));
     }
 
-    // @GetMapping("contributor/activity/{repoId}percentile")
-    // public ResponseEntity<?> getContributorActivityPercentile(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId) {
-    //     List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
-    //     return contributorService.getActivityPercentileByRepo(user, repoId);
-    // }
+    @GetMapping("v1/contributor/activity/breakdown")
+    public ResponseEntity<?> getContributorActivityByDay(@AuthenticationPrincipal Jwt jwt) {
+        List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
+        if(userList.isEmpty()){ 
+            return ResponseEntity.status(500).body("User not found");
+        }
+        User user = userList.getFirst();
+        return ResponseEntity.ok(contributorService.getActivityByDay(user));
+    }
+
+    @GetMapping("v1/contributor/activity/{repoId}/breakdown")
+    public ResponseEntity<?> getContributorActivityRepoByDay(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId) {
+        List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
+        if(userList.isEmpty()){ 
+            return ResponseEntity.status(500).body("User not found");
+        }
+        User user = userList.getFirst();
+
+        return ResponseEntity.ok(contributorService.getActivityRepoByDay(user, repoId));
+    }
+    
 }
