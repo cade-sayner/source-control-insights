@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AuthenticatedApiClient {
 
     public final HttpClient client = HttpClient.newHttpClient();
-    private String jwt;
+    private String jwt = "";
 
     @Autowired
     private Environment environment;
