@@ -9,11 +9,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import com.nimbusds.jwt.SignedJWT;
 
 @Service
 public class LoginService {
@@ -112,6 +115,14 @@ public class LoginService {
                 throw new UnsupportedOperationException("Unsupported operating system");
             }
         } catch (IOException e) {
+        }
+    }
+
+    public boolean isValidToken(String jwt) {
+        try {
+            return SignedJWT.parse(jwt).getState().toString().equals("SIGNED");
+        } catch(ParseException _) {
+            return false;
         }
     }
 }

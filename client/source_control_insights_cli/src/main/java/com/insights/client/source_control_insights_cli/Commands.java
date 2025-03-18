@@ -28,11 +28,17 @@ public class Commands {
     @ShellMethod("Logs in a user")
     public String login() {
         try {
+            CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
+            String token = cliClientFilesHelper.getToken();
+            if(loginService.isValidToken(token)) {
+                authenticatedApiClient.setJwt(token);
+                return "You are already logged in";
+            };
             if (authenticatedApiClient.getJwt() != null)
                 return "You are already logged in";
-            CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
+
             cliClientFilesHelper.createConfigFile();
-            String token = loginService.login();
+            token = loginService.login();
             // write the jwt to a local file, set the jwt on the authenticated client
             cliClientFilesHelper.writeToConfigFile(token);
             authenticatedApiClient.setJwt(token);
