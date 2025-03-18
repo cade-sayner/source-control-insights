@@ -120,6 +120,8 @@ public class LoginService {
 
     public boolean isValidToken(String jwt) {
         try {
+            SignedJWT signedJWT = SignedJWT.parse(jwt);
+            System.out.println(signedJWT.toString());
             return SignedJWT.parse(jwt).getState().toString().equals("SIGNED");
         } catch(ParseException _) {
             return false;

@@ -3,7 +3,6 @@ package com.insights.client.source_control_insights_cli;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -61,6 +60,7 @@ public class Commands {
     @ShellMethod("Creates a repository")
     public String create_repo(@ShellOption(help = "The name of the repository") String name,
             @ShellOption(help = "The URL of the repository") String repoUrl) {
+
         if (authenticatedApiClient.getJwt() == null)
             return "You must be logged in to access this command";
         try{
@@ -118,5 +118,10 @@ public class Commands {
     @ShellMethod(value="Get user repo url", key="get-repo")
     public String getRepoUrl() {
         return commits.getRepoUrl();
+    }
+
+    @ShellMethod(value="Get user repo name", key="get-repo-name")
+    public String getRepoName() {
+        return commits.getRepoName();
     }
 }
