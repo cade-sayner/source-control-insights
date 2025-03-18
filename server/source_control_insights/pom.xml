@@ -10,7 +10,7 @@
     </parent>
     <artifactId>server</artifactId>
     <name>source_control_insights_server</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Version Control Insights Tool</description>
     <packaging>jar</packaging>
     <url/>
     <licenses>
