@@ -26,6 +26,7 @@ public class AuthService {
     public String login(LoginRequestBody loginReq, GoogleAuthService googleAuthService) throws Exception {
         // get the google jwt
         String jwt = googleAuthService.getJWT(loginReq.getAuthCode());
+        System.out.println(jwt);
         Map<String, Object> claims = extractClaims(jwt);
 
         // get info from the user's jwt

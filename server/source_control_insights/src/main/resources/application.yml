@@ -6,7 +6,7 @@ spring:
           issuer-uri: insights.com
           jwk-set-uri: http://localhost:8080/jwks.json
   datasource:
-    url: ${DATABASE_CONNECTION_STRING}
+    url: jdbc:postgresql://vc-db.chulcebul0ir.eu-west-1.rds.amazonaws.com:5432/version_control_insights
     driver-class-name: org.postgresql.Driver
     username: vcadmin
     password: versioncontrol
@@ -18,4 +18,4 @@ spring:
       hibernate:
        dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
-  port: ${SERVER_PORT}
+  port: 8080

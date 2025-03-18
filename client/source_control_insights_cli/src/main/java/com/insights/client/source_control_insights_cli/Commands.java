@@ -38,8 +38,8 @@ public class Commands {
             if (authenticatedApiClient.getJwt() != null)
                 return "You are already logged in";
 
-
             token = loginService.login();
+            System.out.println(token);
             // write the jwt to a local file, set the jwt on the authenticated client
             cliClientFilesHelper.writeToConfigFile(token);
             authenticatedApiClient.setJwt(token);
