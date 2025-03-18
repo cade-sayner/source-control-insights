@@ -30,6 +30,15 @@ public class ContributorController {
         this.repoRepository = repoRepository;
     }
 
+    @GetMapping("v1/contributor")
+    public ResponseEntity<?> getContributor(@AuthenticationPrincipal Jwt jwt){
+        List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
+        if(userList.isEmpty()){ 
+            return ResponseEntity.status(500).body("User not found");
+        }
+        return ResponseEntity.ok(userList.getFirst());
+    }
+
     @GetMapping("v1/contributor/activity")
     public ResponseEntity<?> getContributorActivity(@AuthenticationPrincipal Jwt jwt) {
         List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
