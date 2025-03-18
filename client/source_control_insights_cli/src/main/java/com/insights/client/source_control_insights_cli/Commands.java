@@ -30,7 +30,6 @@ public class Commands {
     @ShellMethod("Logs in a user")
     public String login() {
         try {
-            //CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
             this.cliClientFilesHelper.createConfigFile();
             String token = this.cliClientFilesHelper.getToken();
             if(loginService.isValidToken(token)) {
