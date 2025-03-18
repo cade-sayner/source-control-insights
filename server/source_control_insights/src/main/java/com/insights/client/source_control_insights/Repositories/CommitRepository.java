@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface CommitRepository extends JpaRepository<Commit, UUID> {
     List<Commit> findByRepository_RepoIdOrderByCommitTimestampDesc(UUID repoId);
     List<Commit> findByContributor_GoogleId(String googleId);
+    //List<Commit> findByCommitMessageContaining(String code);;
 }
