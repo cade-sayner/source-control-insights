@@ -22,8 +22,7 @@ public class CliClientFilesHelper {
   }
 
   private File getFile() {
-    String fileName = getFileName();
-    return new File(fileName);
+    return new File(getFileName());
   }
 
   private String getFileName() {
