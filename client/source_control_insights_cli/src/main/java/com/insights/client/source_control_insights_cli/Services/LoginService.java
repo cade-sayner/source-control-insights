@@ -122,14 +122,8 @@ public class LoginService {
 
     public boolean isValidToken(String jwt) {
         try {
-<<<<<<< HEAD
-            SignedJWT signedJWT = SignedJWT.parse(jwt);
-            System.out.println(signedJWT.toString());
-            return SignedJWT.parse(jwt).getState().toString().equals("SIGNED");
-=======
             var expiration = SignedJWT.parse(jwt).getJWTClaimsSet().getExpirationTime();
             return expiration.toInstant().atZone(ZoneId.systemDefault()).isAfter(new Date().toInstant().atZone(ZoneId.systemDefault()));
->>>>>>> create-file-before-login-attempt
         } catch(ParseException _) {
             return false;
         }
