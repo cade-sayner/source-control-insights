@@ -34,7 +34,7 @@ public class AuthService {
         String email = claims.get("email").toString();
         String google_sub = claims.get("sub").toString();
         String username = claims.get("name").toString();
-        String exp = Instant.now().plusMillis(3600000).toString();
+        long exp = ((Instant.now().toEpochMilli() + 3600000));
 
         // look up their role in the database, if they don't exist yet then
         // create them and just assign them the dev role
