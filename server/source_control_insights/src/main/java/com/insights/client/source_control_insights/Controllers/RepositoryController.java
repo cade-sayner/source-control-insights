@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insights.client.source_control_insights.Repositories.RepoRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import com.insights.client.source_control_insights.Services.ContributorService;
+import com.insights.client.source_control_insights.Services.RepositoryService;
 import com.insights.client.source_control_insights.Repositories.CommitRepository;
 import com.insights.client.source_control_insights.Entities.Commit;
 import com.insights.client.source_control_insights.Entities.Repository;
@@ -40,12 +41,14 @@ public class RepositoryController {
     private final CommitRepository commitRepository;
     private final UserRepository userRepository;
     private final ContributorService contributorService;
+    private final RepositoryService repoService;
 
-    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository, ContributorService contributerService) {
+    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository, ContributorService contributerService, RepositoryService repoService) {
         this.repoRepository = repoRepository;
         this.commitRepository = commitRepository;
         this.userRepository = userRepository;
         this.contributorService = contributerService;
+        this.repoService = repoService;
     }
 
     @PostMapping("v1/repo/{name}")
@@ -123,8 +126,14 @@ public class RepositoryController {
         }
     }
 
+    // @GetMapping("v1/repository/{repoId}/activity")
+    // public ResponseEntity getRepositoryActivity(@PathVariable UUID repoId, @RequestParam String sortBy){ 
+    //     List<Commit> commits = commitRespository.findByRepoId(repoId);
+    //     repoService.
+    // }
+
     @GetMapping("v1/repository/{repoId}/leaderboard")
-    public ResponseEntity getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
+    public ResponseEntity<?> getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
         // get the users that belong to the repo
         // TODO: move this to a static somewhere
         Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
