@@ -17,10 +17,10 @@ public class Commits {
     }
 
     public String getRepoUrl() {
-        return processOutput.getCommand(List.of("git", "remote", "get-url", "origin"));
+        return processOutput.getCommand(List.of("git", "remote", "get-url", "origin")).strip();
     }
 
     public String getRepoName() {
-        return Arrays.asList(processOutput.getCommand(List.of("git", "rev-parse", "--show-toplevel")).split("[/\\\\]")).getLast();
+        return Arrays.asList(processOutput.getCommand(List.of("git", "rev-parse", "--show-toplevel")).split("[/\\\\]")).getLast().strip();
     }
 }
