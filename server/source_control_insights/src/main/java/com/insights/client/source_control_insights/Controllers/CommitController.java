@@ -8,7 +8,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.insights.client.source_control_insights.Entities.Commit;
+import com.insights.client.source_control_insights.Services.CommitService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
+@RequestMapping("/api/commits")
 public class CommitController {
     CommitRepository commitRepository;
 
@@ -23,5 +36,14 @@ public class CommitController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occured while fetching the commits.");
         }
+    }
+
+    @Autowired
+    private CommitService commitService;
+
+    @GetMapping("/frequencies")
+    public ResponseEntity<Map<String, Long>> getCommitCodeFrequencies(@RequestParam("repoId") UUID repoId,@RequestParam("code") String code) {
+        Map<String, Long> frequencies = commitService.getCodeFrequency(repoId,code);
+        return ResponseEntity.ok(frequencies);
     }
 }
