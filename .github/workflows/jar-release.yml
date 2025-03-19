@@ -40,6 +40,6 @@ jobs:
           body: "Automatically generated release for Java 23."
           draft: false
           prerelease: false
-          files: target/*.jar
+          files: client/source_control_insights_cli/target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
