@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: built-jar
-        path: client/version_control_insights_cli/target/*.jar
+        path: client/source_control_insights_cli/target/*.jar
