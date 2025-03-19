@@ -126,11 +126,11 @@ public class RepositoryController {
         }
     }
 
-    // @GetMapping("v1/repository/{repoId}/activity")
-    // public ResponseEntity getRepositoryActivity(@PathVariable UUID repoId, @RequestParam String sortBy){ 
-    //     List<Commit> commits = commitRespository.findByRepoId(repoId);
-    //     repoService.
-    // }
+    @GetMapping("v1/repository/{repoId}/activity")
+    public ResponseEntity<?> getRepositoryActivity(@PathVariable UUID repoId){ 
+        List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
+        return ResponseEntity.ok(repoService.getRepoActivitySummary(commits));
+    }
 
     @GetMapping("v1/repository/{repoId}/leaderboard")
     public ResponseEntity<?> getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
