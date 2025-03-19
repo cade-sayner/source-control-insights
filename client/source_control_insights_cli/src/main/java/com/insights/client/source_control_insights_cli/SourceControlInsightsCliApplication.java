@@ -1,6 +1,5 @@
 package com.insights.client.source_control_insights_cli;
 
-import java.io.File;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

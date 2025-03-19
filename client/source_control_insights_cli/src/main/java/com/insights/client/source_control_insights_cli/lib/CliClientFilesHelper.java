@@ -77,6 +77,7 @@ public class CliClientFilesHelper {
       processBuilder.start();
       return true;
     } catch(IOException _) {
+      System.out.println("This is not a git repo, ensure you are in a git repo before running this command.");
       return false;
     }
   }

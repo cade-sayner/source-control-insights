@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -15,37 +16,44 @@ import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
 import com.insights.client.source_control_insights_cli.lib.GitLogFetcher;
+import com.insights.client.source_control_insights_cli.lib.Commits;
 
 @ShellComponent()
 public class Commands {
 
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
+    private final Commits commits;
     private final CliClientFilesHelper cliClientFilesHelper;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private String token = "";
 
-    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient) {
+    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient, Commits commits) {
         this.loginService = loginService;
         this.authenticatedApiClient = authenticatedApiClient;
+        this.commits = commits;
         this.cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
+    }
+
+    @PostConstruct
+    public void checkForJwt() {
+        this.cliClientFilesHelper.createConfigFile();
+        this.token = loginService.isValidToken(this.cliClientFilesHelper.getToken())
+                ? this.cliClientFilesHelper.getToken() : "";
+        this.authenticatedApiClient.setJwt(this.token);
     }
 
     @ShellMethod("Logs in a user")
     public String login() {
         try {
-            this.cliClientFilesHelper.createConfigFile();
-            String token = this.cliClientFilesHelper.getToken();
-            if (loginService.isValidToken(token)) {
+            if(loginService.isValidToken(token)) {
                 authenticatedApiClient.setJwt(token);
                 return "You are already logged in";
-            }
-            ;
-            if (loginService.isValidToken(authenticatedApiClient.getJwt()))
-                return "You are already logged in";
-
-            token = loginService.login();
-            this.cliClientFilesHelper.writeToConfigFile(token);
-            authenticatedApiClient.setJwt(token);
+            };
+            this.token = loginService.login();
+            // write the jwt to a local file, set the jwt on the authenticated client
+            this.cliClientFilesHelper.writeToConfigFile(this.token);
+            authenticatedApiClient.setJwt(this.token);
             return "Login successful";
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
@@ -61,7 +69,7 @@ public class Commands {
     @ShellMethod(value = "Creates a repository", key = "create-repo")
     public String createRepo(@ShellOption(value = "-n", help = "The name of the repository") String name,
             @ShellOption(value = "-u", help = "The URL of the repository") String repoUrl) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
             authenticatedApiClient.createRepository(name, repoUrl);
@@ -73,7 +81,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the repository activity -- PROJECT MANAGER", key = "repo-activity")
     public String getRepoActivity(@ShellOption(value = "-r", help = "The repository id") String repoId) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
             String jsonResponse = authenticatedApiClient.getRepositoryActivity(repoId);
@@ -119,7 +127,7 @@ public class Commands {
     @ShellMethod(value = "Gets the breakdown of commits grouped by date for the currently signed in user", key = "my-breakdown")
     public String getBreakdown(
             @ShellOption(value = "-r", defaultValue = "ALL", help = "The repositories ID") String repoId) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
 
         StringBuilder output = new StringBuilder();
@@ -156,7 +164,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets your repos", key = "my-repos")
     public String getRepos() {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
 
         String repositoriesResponse = authenticatedApiClient.getRepositories();
@@ -188,7 +196,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the currently signed in users activity summary", key = "my-activity")
     public String getActivity(@ShellOption(value = "-r", defaultValue = "ALL") String repoId) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
 
         try {
@@ -242,7 +250,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the information pertaining to the currently signed in user", key = "me")
     public String me() {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
 
         try {
@@ -276,7 +284,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the leaderboard for the specified repository", key = "repo-leaderboard")
     public String getLeaderboard(@ShellOption(value = "-r") String repoId, @ShellOption(value="-f") String groupBy) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
         try {
             String jsonResponse = authenticatedApiClient.getRepoLeaderboard(repoId, groupBy); 
@@ -309,7 +317,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the commits that belong to the signed-in user", key = "my-commits")
     public String myCommits() {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
 
         try {
@@ -346,9 +354,11 @@ public class Commands {
 
     @ShellMethod(value = "Updates the specified repo with the most up to date information at the git repo specified by the path provided", key = "update-repo")
     public String updateRepo(@ShellOption(value="-r") String repoId, @ShellOption(value = "-p") String path) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
+            if (!loginService.isValidToken(this.token))
+                return "You must be logged in to access this command";
             return authenticatedApiClient.updateRepo(repoId, GitLogFetcher.getGitLogAsCSV(path));
         } catch (Exception e) {
             e.printStackTrace();
@@ -358,7 +368,7 @@ public class Commands {
 
     @ShellMethod(value = "Get the date of the latest commit to a repository", key = "get-latest-commit")
     public String getLatest(@ShellOption String repoId) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         return authenticatedApiClient.getLatestCommitDate(repoId);
     }
@@ -388,6 +398,7 @@ public class Commands {
     public String logout() {
         this.cliClientFilesHelper.writeToConfigFile("");
         this.authenticatedApiClient.setJwt("");
+        this.token = "";
         return "Successfully logged out, type \"quit\" and return to quit cli :)";
     }
 }
