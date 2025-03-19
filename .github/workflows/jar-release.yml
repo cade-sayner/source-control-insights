@@ -2,6 +2,10 @@ name: Build and Release JAR
 
 on:
   workflow_dispatch:  
+defaults:
+  run:
+    working-directory:
+      client/source_control_insights_cli
 
 jobs:
   build:
@@ -20,7 +24,6 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd client/source_control_insights_cli
           mvn clean package -DskipTests
 
       - name: Get Latest Release Version
@@ -35,7 +38,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: target/*.jar
+          artifacts: client/source_control_insights_cli/target/*.jar
           generateReleaseNotes: true
           name: "v1.0.0-SNAPSHOT"
           tag: "v1.0.0"
