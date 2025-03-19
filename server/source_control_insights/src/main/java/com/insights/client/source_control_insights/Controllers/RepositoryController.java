@@ -51,8 +51,8 @@ public class RepositoryController {
         this.repoService = repoService;
     }
 
-    @PostMapping("v1/repo/{name}")
-    public ResponseEntity<?> postRepo(@PathVariable String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
+    @PostMapping("v1/repos/{name}")
+    public ResponseEntity<?> postRepo(@PathVariable(value="name") String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
         try {
             if (jwt == null) {
                 return ResponseEntity.status(401).body("Unauthorized: JWT is missing.");
@@ -134,11 +134,8 @@ public class RepositoryController {
 
     @GetMapping("v1/repository/{repoId}/leaderboard")
     public ResponseEntity<?> getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
-        // get the users that belong to the repo
-        // TODO: move this to a static somewhere
         Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
         if(! names.contains(sortBy)) return ResponseEntity.status(400).body("Invalid sorting option.");
-
         var comparator = switch(sortBy){ 
             case "commits" -> LeaderBoardEntry.BY_TOTAL_COMMITS;
             case "days" -> LeaderBoardEntry.BY_COMMIT_DAYS;

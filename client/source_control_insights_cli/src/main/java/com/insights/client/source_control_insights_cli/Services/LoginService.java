@@ -10,7 +10,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.Scanner;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -74,7 +76,7 @@ public class LoginService {
 
     private String getAuthCode() throws Exception {
         String authUrl = "https://accounts.google.com/o/oauth2/auth"
-                + "?client_id=" + System.getenv("OAUTH_CLIENT_ID")
+                + "?client_id=" + environment.getProperty("google.client-id")
                 + "&redirect_uri=" + environment.getProperty("google.redirect-uri")
                 + "&response_type=code"
                 + "&scope=openid%20phone%20email%20profile";
@@ -120,7 +122,8 @@ public class LoginService {
 
     public boolean isValidToken(String jwt) {
         try {
-            return SignedJWT.parse(jwt).getState().toString().equals("SIGNED");
+            var expiration = SignedJWT.parse(jwt).getJWTClaimsSet().getExpirationTime();
+            return expiration.toInstant().atZone(ZoneId.systemDefault()).isAfter(new Date().toInstant().atZone(ZoneId.systemDefault()));
         } catch(ParseException _) {
             return false;
         }
