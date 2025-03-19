@@ -133,7 +133,7 @@ public class RepositoryController {
     }
 
     @GetMapping("v1/repository/{repoId}/leaderboard")
-    public ResponseEntity<?> getRepoLeaderboard(@PathVariable(value="repoId") UUID repoId, @RequestParam String sortBy) {
+    public ResponseEntity<?> getRepoLeaderboard(@PathVariable(value="repoId") UUID repoId, @RequestParam(value="sortBy") String sortBy) {
         Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
         if(! names.contains(sortBy)) return ResponseEntity.status(400).body("Invalid sorting option.");
         var comparator = switch(sortBy){ 
