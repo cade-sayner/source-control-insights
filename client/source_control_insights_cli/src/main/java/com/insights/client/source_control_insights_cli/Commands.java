@@ -69,12 +69,10 @@ public class Commands {
     @ShellMethod(value = "Creates a repository", key = "create-repo")
     public String createRepo(@ShellOption(value = "-n", help = "The name of the repository") String name,
             @ShellOption(value = "-u", help = "The URL of the repository") String repoUrl) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
-            String repoName = name.isBlank() ? this.commits.getRepoName() : name;
-            String remoteRepoUrl = repoUrl.isBlank() ? this.commits.getRepoUrl() : repoUrl;
-            authenticatedApiClient.createRepository(repoName, remoteRepoUrl);
+            authenticatedApiClient.createRepository(name, repoUrl);
             return "Repository successfully created";
         } catch (Exception e) {
             return "Something went wrong creating a repository";
@@ -83,7 +81,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the repository activity -- PROJECT MANAGER", key = "repo-activity")
     public String getRepoActivity(@ShellOption(value = "-r", help = "The repository id") String repoId) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
             String jsonResponse = authenticatedApiClient.getRepositoryActivity(repoId);
@@ -356,7 +354,7 @@ public class Commands {
 
     @ShellMethod(value = "Updates the specified repo with the most up to date information at the git repo specified by the path provided", key = "update-repo")
     public String updateRepo(@ShellOption(value="-r") String repoId, @ShellOption(value = "-p") String path) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
             if (!loginService.isValidToken(this.token))

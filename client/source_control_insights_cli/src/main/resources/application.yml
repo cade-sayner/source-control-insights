@@ -8,4 +8,4 @@ api:
     endpoint: http://localhost:8080
 google:
     redirect-uri: http://localhost:3000/oauth2callback
-    client-id: 
+    client-id: 176588836526-38a5rma3nkl6naeg9eea2gjda33du8ul.apps.googleusercontent.com

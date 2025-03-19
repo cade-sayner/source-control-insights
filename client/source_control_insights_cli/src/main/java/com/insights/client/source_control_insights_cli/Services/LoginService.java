@@ -76,7 +76,7 @@ public class LoginService {
 
     private String getAuthCode() throws Exception {
         String authUrl = "https://accounts.google.com/o/oauth2/auth"
-                + "?client_id=" + System.getenv("OAUTH_CLIENT_ID")
+                + "?client_id=" + environment.getProperty("google.client-id")
                 + "&redirect_uri=" + environment.getProperty("google.redirect-uri")
                 + "&response_type=code"
                 + "&scope=openid%20phone%20email%20profile";
