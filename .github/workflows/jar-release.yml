@@ -32,13 +32,11 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ env.NEW_VERSION }}
-          release_name: Release ${{ env.NEW_VERSION }}
-          body: "Automatically generated release for Java 23."
-          draft: false
-          prerelease: false
-          files: client/source_control_insights_cli/target/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          artifacts: client/source_control_insights_cli/target/*.jar
+          generateReleaseNotes: true
+          name: "v1.0.0-SNAPSHOT"
+          tag: "v1.0.0"
+          draft: true
