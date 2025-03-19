@@ -2,9 +2,9 @@ name: Deploy Server to EC2
 
 on:
   workflow_dispatch: # Enables manual execution
-  push:
-    branches:
-      - main
+  #push:
+    #branches:
+      #- main
 
 jobs:
   build-and-deploy:
