@@ -25,6 +25,13 @@ jobs:
       run: mvn -B package --file client/source_control_insights_cli/pom.xml -DskipTests
 
     - name: Publish to GitHub Packages Apache Maven
+      working-directory: client/version_control_insights_cli
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
-        GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload JAR as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: built-jar
+        path: client/version_control_insights_cli/target/*.jar
