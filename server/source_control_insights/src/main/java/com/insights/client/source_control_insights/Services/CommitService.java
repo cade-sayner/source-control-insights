@@ -18,9 +18,8 @@ public class CommitService {
     public Map<String, Long> getCodeFrequency(UUID repoId ,String code) {
         // Get commits for the given repoId
         List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
-        //List<Commit> commits = commitRepository.findAll();//this is the old version
         
-        // Initialize map to store frequency counts for the predefined codes
+        // Store frequency counts for the predefined codes
         Map<String, Long> frequencyMap = new HashMap<>();
         frequencyMap.put("PRC", 0L);
         frequencyMap.put("BGF", 0L);
@@ -28,14 +27,14 @@ public class CommitService {
         frequencyMap.put("DEV", 0L);
         frequencyMap.put("PRD", 0L);
     
-        // If a specific code is provided, check only that code
+
         if (code != null && !code.isEmpty()) {
-            // Ensure the code is valid
+            
             if (!frequencyMap.containsKey(code)) {
                 throw new IllegalArgumentException("Invalid code: " + code);
             }
     
-            // Initialize count for the specific code
+            
             long count = 0;
     
             // Parse commit messages for the specified code
@@ -46,7 +45,7 @@ public class CommitService {
                 }
             }
     
-            // Return a map with only the specified code and its count
+            // Return a map with the specified code and its count
             Map<String, Long> result = new HashMap<>();
             result.put(code, count);
             return result;
@@ -63,7 +62,7 @@ public class CommitService {
                     }
                 }
             }
-            return frequencyMap;  // Return full map with counts for all codes
+            return frequencyMap;  
         }
     }
 
