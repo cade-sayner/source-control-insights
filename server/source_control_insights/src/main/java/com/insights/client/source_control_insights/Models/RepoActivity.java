@@ -17,6 +17,7 @@ public class RepoActivity{
     int deletions, int netChanges){
         this.totalCommits = totalCommits;
         this.commitVelocityPerDay = commitVelocityPerDay;
+        this.commitVelocityPerWeek = commitVelocityPerWeek;
         this.activeDays = activeDays;
         this.mostActiveDay = mostActiveDay;
         this.lastCommitDate = lastCommitDate;
