@@ -67,8 +67,8 @@ public class Commands {
         return authenticatedApiClient.getJwt();
     }
 
-    @ShellMethod("Creates a repository")
-    public String create_repo(@ShellOption(help = "The name of the repository") String name,
+    @ShellMethod(value = "Creates a repository", key = "create-repo")
+    public String createRepo(@ShellOption(help = "The name of the repository") String name,
             @ShellOption(help = "The URL of the repository") String repoUrl) {
 
         if (!loginService.isValidToken(this.token))
@@ -81,8 +81,56 @@ public class Commands {
         }
     }
 
-    @ShellMethod(value="Gets the breakdown of commits grouped by date for the currently signed in user", key = "my-breakdown")
-    public String getBreakdown(@ShellOption(value="-r", defaultValue="ALL",help = "The repositories ID") String repoId) {
+    @ShellMethod(value = "Gets the repository activity -- PROJECT MANAGER", key = "repo-activity")
+    public String getRepoActivity(@ShellOption(value = "-r", help = "The repository id") String repoId) {
+        if (authenticatedApiClient.getJwt() == null)
+            return "You must be logged in to access this command";
+        try {
+            String jsonResponse = authenticatedApiClient.getRepositoryActivity(repoId);
+            JsonNode json = objectMapper.readTree(jsonResponse);
+            return String.format(
+                    "========================================\n" +
+                            "        REPOSITORY ACTIVITY REPORT         \n" +
+                            "========================================\n" +
+                            " Total Commits     : %-5d\n" +
+                            " Active Days       : %-5d\n" +
+                            " Most Active Day   : %-10s\n" +
+                            " Last Commit Date  : %-19s\n" +
+                            "----------------------------------------\n" +
+                            " Commit Velocity\n" +
+                            "----------------------------------------\n" +
+                            " Per Day          : %-4.1f\n" +
+                            " Per Week         : %-4.1f\n" +
+                            "----------------------------------------\n" +
+                            " Code Changes\n" +
+                            "----------------------------------------\n" +
+                            " Files Changed     : %-5d\n" +
+                            " Insertions        : %-6d\n" +
+                            " Deletions         : %-5d\n" +
+                            " Net Changes       : %+6d\n" +
+                            "========================================\n",
+                    json.get("totalCommits").asInt(),
+                    json.get("activeDays").asInt(),
+                    json.get("mostActiveDay").asText(),
+                    json.get("lastCommitDate").asText(),
+                    json.get("commitVelocityPerDay").asDouble(),
+                    json.get("commitVelocityPerWeek").asDouble(),
+                    json.get("filesChanged").asInt(),
+                    json.get("insertions").asInt(),
+                    json.get("deletions").asInt(),
+                    json.get("netChanges").asInt());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error parsing JSON data.";
+        }
+    }
+
+    
+
+    @ShellMethod(value = "Gets the breakdown of commits grouped by date for the currently signed in user", key = "my-breakdown")
+    public String getBreakdown(
+            @ShellOption(value = "-r", defaultValue = "ALL", help = "The repositories ID") String repoId) {
         if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
 
@@ -94,7 +142,7 @@ public class Commands {
             } else {
                 jsonResponse = authenticatedApiClient.getBreakdown(repoId);
             }
-        
+
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
             // Use a TreeMap to sort dates in ascending order
@@ -164,44 +212,42 @@ public class Commands {
             } else {
                 jsonResponse = authenticatedApiClient.getMyActivity(repoId);
             }
-
             JsonNode json = objectMapper.readTree(jsonResponse);
 
             return String.format(
-            "========================================\n" +
-            "        COMMIT ACTIVITY REPORT         \n" +
-            "========================================\n" +
-            " Username          : %-15s\n" +
-            "----------------------------------------\n" +
-            " Total Commits     : %-5d\n" +
-            " Active Days       : %-5d\n" +
-            " Most Active Day   : %-10s\n" +
-            " Last Commit Date  : %-19s\n" +
-            "----------------------------------------\n" +
-            " Commit Velocity\n" +
-            "----------------------------------------\n" +
-            " Per Day          : %-4.1f\n" +
-            " Per Week         : %-4.1f\n" +
-            "----------------------------------------\n" +
-            " Code Changes\n" +
-            "----------------------------------------\n" +
-            " Files Changed     : %-5d\n" +
-            " Insertions        : %-6d\n" +
-            " Deletions         : %-5d\n" +
-            " Net Changes       : %+6d\n" +
-            "========================================\n",
-            json.get("username").asText(),
-            json.get("totalCommits").asInt(),
-            json.get("activeDays").asInt(),
-            json.get("mostActiveDay").asText(),
-            json.get("lastCommitDate").asText(),
-            json.get("commitVelocityPerDay").asDouble(),
-            json.get("commitVelocityPerWeek").asDouble(),
-            json.get("filesChanged").asInt(),
-            json.get("insertions").asInt(),
-            json.get("deletions").asInt(),
-            json.get("netChanges").asInt()
-        );
+                    "========================================\n" +
+                            "        USER ACTIVITY REPORT         \n" +
+                            "========================================\n" +
+                            " Username          : %-15s\n" +
+                            "----------------------------------------\n" +
+                            " Total Commits     : %-5d\n" +
+                            " Active Days       : %-5d\n" +
+                            " Most Active Day   : %-10s\n" +
+                            " Last Commit Date  : %-19s\n" +
+                            "----------------------------------------\n" +
+                            " Commit Velocity\n" +
+                            "----------------------------------------\n" +
+                            " Per Day          : %-4.1f\n" +
+                            " Per Week         : %-4.1f\n" +
+                            "----------------------------------------\n" +
+                            " Code Changes\n" +
+                            "----------------------------------------\n" +
+                            " Files Changed     : %-5d\n" +
+                            " Insertions        : %-6d\n" +
+                            " Deletions         : %-5d\n" +
+                            " Net Changes       : %+6d\n" +
+                            "========================================\n",
+                    json.get("username").asText(),
+                    json.get("totalCommits").asInt(),
+                    json.get("activeDays").asInt(),
+                    json.get("mostActiveDay").asText(),
+                    json.get("lastCommitDate").asText(),
+                    json.get("commitVelocityPerDay").asDouble(),
+                    json.get("commitVelocityPerWeek").asDouble(),
+                    json.get("filesChanged").asInt(),
+                    json.get("insertions").asInt(),
+                    json.get("deletions").asInt(),
+                    json.get("netChanges").asInt());
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR: Could not fetch profile. Please try again.";
@@ -236,6 +282,39 @@ public class Commands {
             output.append("========================================");
 
             return output.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR: Could not fetch profile. Please try again.";
+        }
+    }
+
+    @ShellMethod(value = "Gets the leaderboard for the specified repository", key = "get-repo-leaderboard")
+    public String getLeaderboard(@ShellOption(value = "-r") String repoId, @ShellOption(value="-f") String groupBy) {
+        if (authenticatedApiClient.getJwt() == null)
+            return "ERROR: You must be logged in to access this command.";
+        try {
+            String jsonResponse = authenticatedApiClient.getRepoLeaderboard(repoId, groupBy); 
+
+            StringBuilder output = new StringBuilder();
+        output.append("===================================================================\n");
+        output.append("                            LEADERBOARD                            \n");
+        output.append("===================================================================\n");
+        output.append(String.format("%-5s %-20s %-10s %-10s %-10s %-10s\n",
+                "Rank", "Username", "Commits", "Days", "Per Day", "Per Week"));
+        output.append("-------------------------------------------------------------------\n");
+        JsonNode jsonArray = objectMapper.readTree(jsonResponse);
+        for (JsonNode user : jsonArray) {
+            output.append(String.format("%-5d %-20s %-10d %-10d %-10.1f %-10.1f\n",
+                    user.get("ranking").asInt(),
+                    user.get("username").asText(),
+                    user.get("totalCommits").asInt(),
+                    user.get("commitDays").asInt(),
+                    user.get("commitVelocityPerDay").asDouble(),
+                    user.get("commitVelocityPerWeek").asDouble()));
+        }
+
+        output.append("===================================================================\n");
+        return output.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR: Could not fetch profile. Please try again.";
@@ -309,10 +388,11 @@ public class Commands {
         return resultString;
     }
 
-    @ShellMethod(key="logout", value="Clears user token for them to authenticate again next time they login")
+    @ShellMethod(key = "logout", value = "Clears user token for them to authenticate again next time they login")
     public String logout() {
         this.cliClientFilesHelper.writeToConfigFile("");
         this.authenticatedApiClient.setJwt("");
+        this.token = "";
         return "Successfully logged out, type \"quit\" and return to quit cli :)";
     }
 }
