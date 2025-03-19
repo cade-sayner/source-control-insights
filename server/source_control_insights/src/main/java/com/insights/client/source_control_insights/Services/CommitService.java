@@ -15,34 +15,6 @@ public class CommitService {
     @Autowired
     private CommitRepository commitRepository;
 
-    // public Map<String, Long> getCodeFrequency() {
-    //     List<Commit> commits = commitRepository.findAll();
-        
-    //     // Initialize map to store frequency counts
-    //     Map<String, Long> frequencyMap = new HashMap<>();
-    //     frequencyMap.put("endpoints", 0L);
-    //     frequencyMap.put("changes", 0L);
-    //     frequencyMap.put("updates", 0L);
-
-    //     // Parse commit messages
-    //     for (Commit commit : commits) {
-    //         String message = commit.getMessage();
-    //         if (message != null) {
-    //             // Check for codes at the end of the commit message
-    //             for (String code : frequencyMap.keySet()) {
-    //                 if (message.endsWith(code)) {
-    //                     frequencyMap.put(code, frequencyMap.get(code) + 1);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return frequencyMap;
-    // }
-
-    //  public List<Commit> getCommitsByCode(String code) {
-    //      return commitRepository.findByCommitMessageContaining(code);
-    //  }
-
     public Map<String, Long> getCodeFrequency(UUID repoId ,String code) {
         // Get commits for the given repoId
         List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
@@ -50,9 +22,11 @@ public class CommitService {
         
         // Initialize map to store frequency counts for the predefined codes
         Map<String, Long> frequencyMap = new HashMap<>();
-        frequencyMap.put("endpoints", 0L);
-        frequencyMap.put("changes", 0L);
-        frequencyMap.put("updates", 0L);
+        frequencyMap.put("PRC", 0L);
+        frequencyMap.put("BGF", 0L);
+        frequencyMap.put("FTR", 0L);
+        frequencyMap.put("DEV", 0L);
+        frequencyMap.put("PRD", 0L);
     
         // If a specific code is provided, check only that code
         if (code != null && !code.isEmpty()) {

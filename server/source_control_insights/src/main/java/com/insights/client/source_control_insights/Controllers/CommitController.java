@@ -13,7 +13,6 @@ import com.insights.client.source_control_insights.Services.CommitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,21 +40,6 @@ public class CommitController {
 
     @Autowired
     private CommitService commitService;
-
-    // @GetMapping("/frequency")
-    // public ResponseEntity<Map<String, Long>> getFrequency() {
-    //     Map<String, Long> frequencyMap = commitService.getCodeFrequency();
-    //     return ResponseEntity.ok(frequencyMap);
-    // }
-
-    // @GetMapping("/search")
-    // public ResponseEntity<List<Commit>> searchByCode(@RequestParam String code) {
-    //     if (!Arrays.asList("endpoints", "changes", "updates").contains(code)) {
-    //         return ResponseEntity.badRequest().body(Collections.emptyList());
-    //     }
-    //     List<Commit> commits = commitService.getCommitsByCode(code);
-    //     return ResponseEntity.ok(commits);
-    // }
 
     @GetMapping("/frequencies")
     public ResponseEntity<Map<String, Long>> getCommitCodeFrequencies(@RequestParam("repoId") UUID repoId,@RequestParam("code") String code) {
