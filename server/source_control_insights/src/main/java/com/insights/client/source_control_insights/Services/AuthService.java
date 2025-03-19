@@ -12,7 +12,6 @@ import com.insights.client.source_control_insights.Repositories.RoleRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.extractClaims;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.generateJWT;
-import java.time.temporal.ChronoUnit;
 import java.time.Instant;
 
 @Service
@@ -28,14 +27,13 @@ public class AuthService {
     public String login(LoginRequestBody loginReq, GoogleAuthService googleAuthService) throws Exception {
         // get the google jwt
         String jwt = googleAuthService.getJWT(loginReq.getAuthCode());
-        System.out.println(jwt);
         Map<String, Object> claims = extractClaims(jwt);
 
         // get info from the user's jwt
         String email = claims.get("email").toString();
         String google_sub = claims.get("sub").toString();
         String username = claims.get("name").toString();
-        String exp = Instant.now().plusMillis(3600000).toString();
+        long exp = ((Instant.now().toEpochMilli() + 3600000));
 
         // look up their role in the database, if they don't exist yet then
         // create them and just assign them the dev role

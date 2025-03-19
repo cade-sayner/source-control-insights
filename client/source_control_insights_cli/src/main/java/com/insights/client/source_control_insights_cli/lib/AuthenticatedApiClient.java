@@ -39,6 +39,31 @@ public class AuthenticatedApiClient {
         return get("/v1/repos", new HashMap<>()).body();
     }
 
+    public String getCommits(){ 
+        return get("/v1/commits", new HashMap<>()).body();
+    }
+
+    public String getMe(){ 
+        return get("/v1/contributor", new HashMap<>()).body();
+    }
+
+    public String getMyActivity(){ 
+        return get("/v1/contributor/activity", new HashMap<>()).body();
+    }
+
+
+    public String getMyActivity(String repoId){ 
+        return get("/v1/contributor/activity/" + repoId, new HashMap<>()).body();
+    }
+
+    public String getBreakdown(){ 
+        return get("/v1/contributor/activity/breakdown", new HashMap<>()).body();
+    }
+
+    public String getBreakdown(String repoId){ 
+        return get("/v1/contributor/activity/" + repoId + "/breakdown", new HashMap<>()).body();
+    }
+
     public String getLatestCommitDate(String repoId) {
         return get("/v1/repos/latest/" + repoId, new HashMap<>()).body();
     }
