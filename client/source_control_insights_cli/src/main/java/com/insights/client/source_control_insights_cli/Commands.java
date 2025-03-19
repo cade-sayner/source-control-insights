@@ -384,6 +384,16 @@ public class Commands {
         return resultString;
     }
 
+    @ShellMethod(value = "Get the frequency of commit codes", key = "commit-code")
+    public String getCommitCodeFrequency(@ShellOption(value = "-r") String repoId, @ShellOption(value = "-c", defaultValue = ShellOption.NULL) String code) {
+        if (code == null) {
+            code = "";
+        }
+        if (authenticatedApiClient.getJwt() == null)
+            return "You must be logged in to access this command";
+        return authenticatedApiClient.getCommitCodeFrequency(repoId, code);
+    }
+
     @ShellMethod(key = "logout", value = "Clears user token for them to authenticate again next time they login")
     public String logout() {
         this.cliClientFilesHelper.writeToConfigFile("");

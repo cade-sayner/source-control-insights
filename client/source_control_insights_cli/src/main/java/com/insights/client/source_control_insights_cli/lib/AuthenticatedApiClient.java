@@ -164,4 +164,11 @@ public class AuthenticatedApiClient {
             return null;
         }
     }
+
+    public String getCommitCodeFrequency(String repoId, String code) {
+        var queryParams = new HashMap<String, String>();
+        queryParams.put("repoId", repoId);
+        queryParams.put("code", code);
+        return get("/api/commits/frequencies", queryParams).body();
+    }
 }
