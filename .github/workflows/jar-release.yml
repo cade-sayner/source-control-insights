@@ -27,7 +27,7 @@ jobs:
           
           LATEST_VERSION=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name' || echo "v0.0.0")
           if [[ "$LATEST_VERSION" == "null" || -z "$LATEST_VERSION" ]]; then
-            LATEST_VERSION="v0.0.0"
+            LATEST_VERSION="0.0.0"
           fi
           echo "Latest version: $LATEST_VERSION"
           NEW_VERSION=$(echo $LATEST_VERSION | awk -F. '{print "v"$1"."$2"."$3+1}')
