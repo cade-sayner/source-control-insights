@@ -48,7 +48,6 @@ public class AuthenticatedApiClient {
     public String getRepoLeaderboard(String repoId, String groupBy){ 
         var queryParams = new HashMap<String,String>();
         queryParams.put("sortBy", groupBy);
-        System.out.println(queryParams);
         return get("/v1/repository/" + repoId + "/leaderboard", queryParams).body();
     }
 
