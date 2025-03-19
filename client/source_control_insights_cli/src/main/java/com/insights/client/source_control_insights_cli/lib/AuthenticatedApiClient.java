@@ -169,6 +169,6 @@ public class AuthenticatedApiClient {
         var queryParams = new HashMap<String, String>();
         queryParams.put("repoId", repoId);
         queryParams.put("code", code);
-        return get("/api/commits/frequencies", queryParams).body();
+        return get("/v1/commits/frequencies", queryParams).body();
     }
 }
