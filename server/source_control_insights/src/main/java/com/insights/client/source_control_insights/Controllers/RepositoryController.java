@@ -51,7 +51,7 @@ public class RepositoryController {
         this.repoService = repoService;
     }
 
-    @PostMapping("v1/repo/{name}")
+    @PostMapping("v1/repos/{name}")
     public ResponseEntity<?> postRepo(@PathVariable String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
         try {
             if (jwt == null) {
