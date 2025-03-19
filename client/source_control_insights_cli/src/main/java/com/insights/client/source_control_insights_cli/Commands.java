@@ -3,6 +3,8 @@ package com.insights.client.source_control_insights_cli;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import com.insights.client.source_control_insights_cli.lib.CommandOutputs;
 import jakarta.annotation.PostConstruct;
@@ -69,6 +71,7 @@ public class Commands {
     @ShellMethod(value = "Creates a repository", key = "create-repo")
     public String createRepo(@ShellOption(value = "-n", help = "The name of the repository", defaultValue = "") String name,
             @ShellOption(value = "-u", help = "The URL of the repository", defaultValue = "") String repoUrl) {
+
         if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
@@ -81,7 +84,7 @@ public class Commands {
         }
     }
 
-    @ShellMethod(value = "Gets the repository activity -- PROJECT MANAGER", key = "repo-activity")
+    @ShellMethod(value = "Gets the repository activity (-r <repoId>)", key = "repo-activity")
     public String getRepoActivity(@ShellOption(value = "-r", help = "The repository id") String repoId) {
         if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
@@ -126,7 +129,7 @@ public class Commands {
         }
     }
 
-    @ShellMethod(value = "Gets the breakdown of commits grouped by date for the currently signed in user", key = "my-breakdown")
+    @ShellMethod(value = "Gets commit breakdown grouped by date (-r <repoId>)", key = "my-breakdown")
     public String getBreakdown(
             @ShellOption(value = "-r", defaultValue = "ALL", help = "The repositories ID") String repoId) {
         if (!loginService.isValidToken(this.token))
@@ -196,7 +199,7 @@ public class Commands {
         }
     }
 
-    @ShellMethod(value = "Gets the currently signed in users activity summary", key = "my-activity")
+    @ShellMethod(value = "Gets your activity summary (-r <repoId>)", key = "my-activity")
     public String getActivity(@ShellOption(value = "-r", defaultValue = "ALL") String repoId) {
         if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
@@ -402,5 +405,22 @@ public class Commands {
         this.authenticatedApiClient.setJwt("");
         this.token = "";
         return "Successfully logged out, type \"quit\" and return to quit cli :)";
+    }
+
+    @ShellMethod("Displays a list of all available commands")
+    public String help() {
+        StringBuilder helpText = new StringBuilder();
+        helpText.append("Available Commands:\n");
+        
+        // Get all methods annotated with @ShellMethod
+        Method[] methods = Commands.class.getDeclaredMethods();
+        Arrays.stream(methods)
+                .filter(method -> method.isAnnotationPresent(ShellMethod.class)) 
+                .forEach(method -> {
+                    ShellMethod shellMethod = method.getAnnotation(ShellMethod.class);
+                    helpText.append(String.format("%-20s : %s\n", shellMethod.key()[0], shellMethod.value()));
+                });
+
+        return helpText.toString();
     }
 }
