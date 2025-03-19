@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.insights.client.source_control_insights_cli.lib.CommandOutputs;
 import jakarta.annotation.PostConstruct;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -16,22 +17,21 @@ import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
 import com.insights.client.source_control_insights_cli.lib.GitLogFetcher;
-import com.insights.client.source_control_insights_cli.lib.Commits;
 
 @ShellComponent()
 public class Commands {
 
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
-    private final Commits commits;
+    private final CommandOutputs commandOutputs;
     private final CliClientFilesHelper cliClientFilesHelper;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String token = "";
 
-    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient, Commits commits) {
+    public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient, CommandOutputs commandOutputs) {
         this.loginService = loginService;
         this.authenticatedApiClient = authenticatedApiClient;
-        this.commits = commits;
+        this.commandOutputs = commandOutputs;
         this.cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
     }
 
@@ -67,12 +67,14 @@ public class Commands {
     }
 
     @ShellMethod(value = "Creates a repository", key = "create-repo")
-    public String createRepo(@ShellOption(value = "-n", help = "The name of the repository") String name,
-            @ShellOption(value = "-u", help = "The URL of the repository") String repoUrl) {
+    public String createRepo(@ShellOption(value = "-n", help = "The name of the repository", defaultValue = "") String name,
+            @ShellOption(value = "-u", help = "The URL of the repository", defaultValue = "") String repoUrl) {
         if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {
-            authenticatedApiClient.createRepository(name, repoUrl);
+            String repoName = name.isEmpty() ? this.commandOutputs.getRepoName() : name;
+            String remoteRepoUrl = repoUrl.isEmpty() ? this.commandOutputs.getRepoUrl() : repoUrl;
+            authenticatedApiClient.createRepository(repoName, remoteRepoUrl);
             return "Repository successfully created";
         } catch (Exception e) {
             return "Something went wrong creating a repository";
@@ -353,7 +355,7 @@ public class Commands {
     }
 
     @ShellMethod(value = "Updates the specified repo with the most up to date information at the git repo specified by the path provided", key = "update-repo")
-    public String updateRepo(@ShellOption(value="-r") String repoId, @ShellOption(value = "-p") String path) {
+    public String updateRepo(@ShellOption(value="-r") String repoId, @ShellOption(value = "-p", defaultValue = "") String path) {
         if (!loginService.isValidToken(this.token))
             return "You must be logged in to access this command";
         try {

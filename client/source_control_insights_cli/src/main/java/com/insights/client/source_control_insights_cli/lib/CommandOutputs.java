@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Commits {
+public class CommandOutputs {
 
     private final ProcessOutput processOutput;
 
     @Autowired
-    public Commits(ProcessOutput processOutput) {
+    public CommandOutputs(ProcessOutput processOutput) {
         this.processOutput = processOutput;
     }
 

@@ -52,7 +52,7 @@ public class RepositoryController {
     }
 
     @PostMapping("v1/repos/{name}")
-    public ResponseEntity<?> postRepo(@PathVariable String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
+    public ResponseEntity<?> postRepo(@PathVariable(value="name") String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
         try {
             if (jwt == null) {
                 return ResponseEntity.status(401).body("Unauthorized: JWT is missing.");
