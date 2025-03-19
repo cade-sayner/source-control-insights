@@ -286,7 +286,7 @@ public class Commands {
 
     @ShellMethod(value = "Gets the leaderboard for the specified repository", key = "repo-leaderboard")
     public String getLeaderboard(@ShellOption(value = "-r") String repoId, @ShellOption(value="-f") String groupBy) {
-        if (authenticatedApiClient.getJwt() == null)
+        if (!loginService.isValidToken(this.token))
             return "ERROR: You must be logged in to access this command.";
         try {
             String jsonResponse = authenticatedApiClient.getRepoLeaderboard(repoId, groupBy); 
