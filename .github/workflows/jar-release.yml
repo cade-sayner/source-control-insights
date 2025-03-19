@@ -19,16 +19,13 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests
+        run: |
+          cd client/source_control_insights_cli
+          mvn clean package -DskipTests
 
       - name: Get Latest Release Version
         id: get_version
         run: |
-          
-          LATEST_VERSION=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name' || echo "v0.0.0")
-          if [[ "$LATEST_VERSION" == "null" || -z "$LATEST_VERSION" ]]; then
-            LATEST_VERSION="0.0.0"
-          fi
           echo "Latest version: $LATEST_VERSION"
           NEW_VERSION=$(echo $LATEST_VERSION | awk -F. '{print "v"$1"."$2"."$3+1}')
           echo "New version: $NEW_VERSION"
@@ -42,6 +39,6 @@ jobs:
           body: "Automatically generated release for Java 23."
           draft: false
           prerelease: false
-          files: target/*.jar
+          files: client/source_control_insights_cli/target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
