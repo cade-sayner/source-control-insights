@@ -23,7 +23,7 @@ jobs:
     - name: Build Server Maven Project
       run: |
         cd server/source_control_insights
-        mvn package spring-boot:repackage
+        mvn clean package spring-boot:repackage
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
