@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
-import com.insights.client.source_control_insights_cli.lib.Commits;
+import com.insights.client.source_control_insights_cli.lib.CommandOutputs;
 
 public class CommandsTest {
 
@@ -33,14 +33,14 @@ public class CommandsTest {
     private Commands commands;
 
     @Mock
-    private Commits commit;
+    private CommandOutputs commandOutputs;
    
 
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        commands = new Commands(loginService, authenticatedApiClient, commit);
+        commands = new Commands(loginService, authenticatedApiClient, commandOutputs);
     }
 
     @Test
