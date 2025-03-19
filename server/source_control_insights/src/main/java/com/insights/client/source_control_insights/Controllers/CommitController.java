@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/commits")
+@RequestMapping("v1/")
 public class CommitController {
     CommitRepository commitRepository;
 
@@ -29,7 +29,7 @@ public class CommitController {
         this.commitRepository = commitRepository;
     }
 
-    @GetMapping("v1/commits")
+    @GetMapping("commits")
     public ResponseEntity<?> getCommits(@AuthenticationPrincipal Jwt jwt) {
         try {
             return ResponseEntity.ok(commitRepository.findByContributor_GoogleId(jwt.getClaim("sub")));
@@ -41,7 +41,7 @@ public class CommitController {
     @Autowired
     private CommitService commitService;
 
-    @GetMapping("/frequencies")
+    @GetMapping("commits/frequencies")
     public ResponseEntity<Map<String, Long>> getCommitCodeFrequencies(@RequestParam("repoId") UUID repoId,@RequestParam("code") String code) {
         Map<String, Long> frequencies = commitService.getCodeFrequency(repoId,code);
         return ResponseEntity.ok(frequencies);

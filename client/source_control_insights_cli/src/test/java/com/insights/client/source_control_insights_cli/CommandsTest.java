@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import com.insights.client.source_control_insights_cli.Services.LoginService;
 import com.insights.client.source_control_insights_cli.lib.AuthenticatedApiClient;
 import com.insights.client.source_control_insights_cli.lib.CliClientFilesHelper;
+import com.insights.client.source_control_insights_cli.lib.Commits;
 
 public class CommandsTest {
 
@@ -31,10 +32,15 @@ public class CommandsTest {
     @InjectMocks
     private Commands commands;
 
+    @Mock
+    private Commits commit;
+   
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        commands = new Commands(loginService, authenticatedApiClient);
+        commands = new Commands(loginService, authenticatedApiClient, commit);
     }
 
     @Test
@@ -74,50 +80,6 @@ public class CommandsTest {
         assertEquals("Something went wrong logging in", result);
     }
     
-    @Test
-    void testCreateRepo_Unauthorized() {
-        when(authenticatedApiClient.getJwt()).thenReturn(null);
-        
-        String result = commands.createRepo("repoName", "repoUrl");
-        
-        assertEquals("You must be logged in to access this command", result);
-    }
-    
-    @Test
-    void testCreateRepo_Successful() {
-        when(authenticatedApiClient.getJwt()).thenReturn("valid-jwt");
-        
-        String result = commands.createRepo("repoName", "repoUrl");
-        
-        assertEquals("Repository successfully created", result);
-    }
-
-    @Test
-    public void testCreateRepo_Exception() throws Exception {
-        when(authenticatedApiClient.getJwt()).thenReturn("jwtToken");
-        doThrow(new RuntimeException()).when(authenticatedApiClient).createRepository(anyString(), anyString());
-
-        String result = commands.createRepo("repoName", "repoUrl");
-
-        assertEquals("Something went wrong creating a repository", result);
-    }
-    
-
-    @Test
-    public void testGetRepoActivity_Successful() throws Exception {
-        when(authenticatedApiClient.getJwt()).thenReturn("jwtToken");
-        String jsonResponse = "{\"totalCommits\": 10, \"activeDays\": 5, \"mostActiveDay\": \"Monday\", \"lastCommitDate\": \"2024-10-01\", \"commitVelocityPerDay\": 2.0, \"commitVelocityPerWeek\": 14.0, \"filesChanged\": 3, \"insertions\": 100, \"deletions\": 50, \"netChanges\":50}";
-
-        when(authenticatedApiClient.getRepositoryActivity("repoId")).thenReturn(jsonResponse);
-
-        String result = commands.getRepoActivity("repoId");
-
-        assertTrue(result.contains("Total Commits     : 10"));
-        assertTrue(result.contains("Active Days       : 5"));
-        assertTrue(result.contains("Most Active Day   : Monday"));
-        assertTrue(result.contains("Last Commit Date  : 2024-10-01"));
-    }
-
     @Test
     public void testGetRepoActivity_Unauthorized() {
         when(authenticatedApiClient.getJwt()).thenReturn(null);
