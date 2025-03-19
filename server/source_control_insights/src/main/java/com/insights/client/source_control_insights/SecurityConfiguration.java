@@ -15,6 +15,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/api/test-project_manager").hasAuthority("SCOPE_PROJ_MAN")
                         .requestMatchers("/api/test-developer").hasAuthority("SCOPE_DEV")
                         .anyRequest().permitAll())

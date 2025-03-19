@@ -12,6 +12,7 @@ import com.insights.client.source_control_insights.Repositories.RoleRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.extractClaims;
 import static com.insights.client.source_control_insights.lib.JwtHelpers.generateJWT;
+import java.time.Instant;
 
 @Service
 public class AuthService {
@@ -32,6 +33,7 @@ public class AuthService {
         String email = claims.get("email").toString();
         String google_sub = claims.get("sub").toString();
         String username = claims.get("name").toString();
+        long exp = ((Instant.now().toEpochMilli() + 3600000));
 
         // look up their role in the database, if they don't exist yet then
         // create them and just assign them the dev role
@@ -46,7 +48,7 @@ public class AuthService {
                 .collect(Collectors.toList());
 
         String[] rolesArray = userRoles.toArray(String[]::new);
-        return generateJWT(rolesArray, email, google_sub);
+        return generateJWT(rolesArray, email, google_sub, username, exp);
     }
 
 }

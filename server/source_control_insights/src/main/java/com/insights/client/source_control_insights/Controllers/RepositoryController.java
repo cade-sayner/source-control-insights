@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insights.client.source_control_insights.Repositories.RepoRepository;
 import com.insights.client.source_control_insights.Repositories.UserRepository;
 import com.insights.client.source_control_insights.Services.ContributorService;
+import com.insights.client.source_control_insights.Services.RepositoryService;
 import com.insights.client.source_control_insights.Repositories.CommitRepository;
 import com.insights.client.source_control_insights.Entities.Commit;
 import com.insights.client.source_control_insights.Entities.Repository;
@@ -40,15 +41,17 @@ public class RepositoryController {
     private final CommitRepository commitRepository;
     private final UserRepository userRepository;
     private final ContributorService contributorService;
+    private final RepositoryService repoService;
 
-    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository, ContributorService contributerService) {
+    public RepositoryController(RepoRepository repoRepository, CommitRepository commitRepository, UserRepository userRepository, ContributorService contributerService, RepositoryService repoService) {
         this.repoRepository = repoRepository;
         this.commitRepository = commitRepository;
         this.userRepository = userRepository;
         this.contributorService = contributerService;
+        this.repoService = repoService;
     }
 
-    @PostMapping("v1/repo/{name}")
+    @PostMapping("v1/repos/{name}")
     public ResponseEntity<?> postRepo(@PathVariable String name, @AuthenticationPrincipal Jwt jwt, @RequestBody String repo_url) {
         try {
             if (jwt == null) {
@@ -123,13 +126,16 @@ public class RepositoryController {
         }
     }
 
+    @GetMapping("v1/repository/{repoId}/activity")
+    public ResponseEntity<?> getRepositoryActivity(@PathVariable UUID repoId){ 
+        List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
+        return ResponseEntity.ok(repoService.getRepoActivitySummary(commits));
+    }
+
     @GetMapping("v1/repository/{repoId}/leaderboard")
-    public ResponseEntity getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
-        // get the users that belong to the repo
-        // TODO: move this to a static somewhere
+    public ResponseEntity<?> getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
         Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
         if(! names.contains(sortBy)) return ResponseEntity.status(400).body("Invalid sorting option.");
-
         var comparator = switch(sortBy){ 
             case "commits" -> LeaderBoardEntry.BY_TOTAL_COMMITS;
             case "days" -> LeaderBoardEntry.BY_COMMIT_DAYS;
