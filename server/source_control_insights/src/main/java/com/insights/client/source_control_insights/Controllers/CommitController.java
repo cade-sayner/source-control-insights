@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/commits")
@@ -41,11 +42,11 @@ public class CommitController {
     @Autowired
     private CommitService commitService;
 
-    @GetMapping("/frequency")
-    public ResponseEntity<Map<String, Long>> getFrequency() {
-        Map<String, Long> frequencyMap = commitService.getCodeFrequency();
-        return ResponseEntity.ok(frequencyMap);
-    }
+    // @GetMapping("/frequency")
+    // public ResponseEntity<Map<String, Long>> getFrequency() {
+    //     Map<String, Long> frequencyMap = commitService.getCodeFrequency();
+    //     return ResponseEntity.ok(frequencyMap);
+    // }
 
     // @GetMapping("/search")
     // public ResponseEntity<List<Commit>> searchByCode(@RequestParam String code) {
@@ -55,4 +56,10 @@ public class CommitController {
     //     List<Commit> commits = commitService.getCommitsByCode(code);
     //     return ResponseEntity.ok(commits);
     // }
+
+    @GetMapping("/frequencies")
+    public ResponseEntity<Map<String, Long>> getCommitCodeFrequencies(@RequestParam("repoId") UUID repoId,@RequestParam("code") String code) {
+        Map<String, Long> frequencies = commitService.getCodeFrequency(repoId,code);
+        return ResponseEntity.ok(frequencies);
+    }
 }
