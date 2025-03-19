@@ -49,7 +49,7 @@ public class ContributorController {
     }
 
     @GetMapping("v1/contributor/activity/{repoId}")
-    public ResponseEntity<?> getContributorActivityByRepo(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId) {
+    public ResponseEntity<?> getContributorActivityByRepo(@AuthenticationPrincipal Jwt jwt, @PathVariable(value = "repoId") UUID repoId) {
         List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
         if(userList.isEmpty()){ 
             return ResponseEntity.status(500).body("User not found");
@@ -73,7 +73,7 @@ public class ContributorController {
     }
 
     @GetMapping("v1/contributor/activity/{repoId}/breakdown")
-    public ResponseEntity<?> getContributorActivityRepoByDay(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId) {
+    public ResponseEntity<?> getContributorActivityRepoByDay(@AuthenticationPrincipal Jwt jwt, @PathVariable(value = "repoId") UUID repoId) {
         List<User> userList = userRepository.findByGoogleId(jwt.getClaim("sub"));
         if(userList.isEmpty()){ 
             return ResponseEntity.status(500).body("User not found");

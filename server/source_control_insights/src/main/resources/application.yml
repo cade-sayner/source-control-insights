@@ -1,6 +1,4 @@
-logging:
-  level:
-    root: off
+
 spring:
   security:
     oauth2:

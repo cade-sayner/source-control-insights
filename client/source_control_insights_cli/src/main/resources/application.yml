@@ -8,7 +8,7 @@ spring:
     interactive:
       enabled: true
 api:
-    endpoint: http://ec2-13-247-190-241.af-south-1.compute.amazonaws.com:8080
+    endpoint: http://localhost:8080
 google:
     redirect-uri: http://localhost:3000/oauth2callback
     client-id: 176588836526-38a5rma3nkl6naeg9eea2gjda33du8ul.apps.googleusercontent.com

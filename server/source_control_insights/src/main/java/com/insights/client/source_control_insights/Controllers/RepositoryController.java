@@ -78,7 +78,7 @@ public class RepositoryController {
     }
 
     @GetMapping("v1/repos/latest/{repoId}")
-    public ResponseEntity<?> getLatestCommit(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID repoId){ 
+    public ResponseEntity<?> getLatestCommit(@AuthenticationPrincipal Jwt jwt, @PathVariable(value = "repoId") UUID repoId){ 
         List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
         if(commits.size() == 0){ 
             return ResponseEntity.ok("{\"latestCommit\": 0}");
@@ -89,7 +89,7 @@ public class RepositoryController {
     }
 
     @PatchMapping("v1/repos/{repoId}")
-    public ResponseEntity<?> patchRepos(@AuthenticationPrincipal Jwt jwt, @RequestBody String body, @PathVariable UUID repoId){ 
+    public ResponseEntity<?> patchRepos(@AuthenticationPrincipal Jwt jwt, @RequestBody String body, @PathVariable(value="repoId") UUID repoId){ 
         try{    
             String[] rows = body.split("\n");
             System.out.println("The rows are");
@@ -127,13 +127,13 @@ public class RepositoryController {
     }
 
     @GetMapping("v1/repository/{repoId}/activity")
-    public ResponseEntity<?> getRepositoryActivity(@PathVariable UUID repoId){ 
+    public ResponseEntity<?> getRepositoryActivity(@PathVariable(value = "repoId") UUID repoId){ 
         List<Commit> commits = commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(repoId);
         return ResponseEntity.ok(repoService.getRepoActivitySummary(commits));
     }
 
     @GetMapping("v1/repository/{repoId}/leaderboard")
-    public ResponseEntity<?> getRepoLeaderboard(@PathVariable UUID repoId, @RequestParam String sortBy) {
+    public ResponseEntity<?> getRepoLeaderboard(@PathVariable(value="repoId") UUID repoId, @RequestParam String sortBy) {
         Set<String> names = new HashSet<>(Set.of("commits", "days", "velocity_days", "velocity_weeks"));
         if(! names.contains(sortBy)) return ResponseEntity.status(400).body("Invalid sorting option.");
         var comparator = switch(sortBy){ 
