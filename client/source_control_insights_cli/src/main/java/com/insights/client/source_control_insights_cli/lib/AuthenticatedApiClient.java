@@ -25,12 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class AuthenticatedApiClient {
 
+
     public final HttpClient client = HttpClient.newHttpClient();
     private String jwt = "";
 
     @Autowired
     private Environment environment;
 
+   
     public String createRepository(String name, String repoUrl) {
         return post("/v1/repos/" + name, repoUrl).body();
     }
@@ -41,6 +43,13 @@ public class AuthenticatedApiClient {
 
     public String getCommits(){ 
         return get("/v1/commits", new HashMap<>()).body();
+    }
+
+    public String getRepoLeaderboard(String repoId, String groupBy){ 
+        var queryParams = new HashMap<String,String>();
+        queryParams.put("sortBy", groupBy);
+        System.out.println(queryParams);
+        return get("/v1/repository/" + repoId + "/leaderboard", queryParams).body();
     }
 
     public String getMe(){ 
@@ -66,6 +75,10 @@ public class AuthenticatedApiClient {
 
     public String getLatestCommitDate(String repoId) {
         return get("/v1/repos/latest/" + repoId, new HashMap<>()).body();
+    }
+
+    public String getRepositoryActivity(String repoId){ 
+        return get("/v1/repository/" + repoId + "/activity", new HashMap<>()).body();
     }
 
     public String updateRepo(String repoId, String logCsv) throws Exception {
