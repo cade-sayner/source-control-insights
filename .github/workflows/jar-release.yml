@@ -26,6 +26,5 @@ jobs:
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-      working-directory: client/source_control_insights
       env:
         GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
