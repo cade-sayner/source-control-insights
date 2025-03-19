@@ -21,30 +21,30 @@ public class Commands {
 
     private final AuthenticatedApiClient authenticatedApiClient;
     private final LoginService loginService;
+    private final CliClientFilesHelper cliClientFilesHelper;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Commands(LoginService loginService, AuthenticatedApiClient authenticatedApiClient) {
         this.loginService = loginService;
         this.authenticatedApiClient = authenticatedApiClient;
+        this.cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
     }
 
     @ShellMethod("Logs in a user")
     public String login() {
         try {
-            CliClientFilesHelper cliClientFilesHelper = new CliClientFilesHelper(".insights", "config");
-            String token = cliClientFilesHelper.getToken().strip();
-            if (loginService.isValidToken(token)) {
+            this.cliClientFilesHelper.createConfigFile();
+            String token = this.cliClientFilesHelper.getToken();
+            if(loginService.isValidToken(token)) {
                 authenticatedApiClient.setJwt(token);
                 return "You are already logged in";
-            }
-            ;
-            if (authenticatedApiClient.getJwt() != null)
+            };
+            if (loginService.isValidToken(authenticatedApiClient.getJwt()))
                 return "You are already logged in";
 
-            cliClientFilesHelper.createConfigFile();
             token = loginService.login();
             // write the jwt to a local file, set the jwt on the authenticated client
-            cliClientFilesHelper.writeToConfigFile(token);
+            this.cliClientFilesHelper.writeToConfigFile(token);
             authenticatedApiClient.setJwt(token);
             return "Login successful";
         } catch (Exception e) {
@@ -297,5 +297,12 @@ public class Commands {
             resultString += "\n";
         }
         return resultString;
+    }
+
+    @ShellMethod(key="logout", value="Clears user token for them to authenticate again next time they login")
+    public String logout() {
+        this.cliClientFilesHelper.writeToConfigFile("");
+        this.authenticatedApiClient.setJwt("");
+        return "Successfully logged out, type \"quit\" and return to quit cli :)";
     }
 }
