@@ -36,7 +36,9 @@ public class CommitServiceTest {
         commit1 = new Commit();
         commit2 = new Commit();
         commit3 = new Commit();
+        //UUID repoId = UUID.randomUUID();
         rep1 = new Repository();
+        //rep1.setRepoId(repoId);
         commit1.setRepository(rep1);
         commit2.setRepository(rep1);
         commit3.setRepository(rep1);
@@ -48,14 +50,14 @@ public class CommitServiceTest {
         when(commitRepository.findByRepository_RepoIdOrderByCommitTimestampDesc(rep1.getRepoId())).thenReturn(Arrays.asList(commit1, commit2, commit3));
 
         // Act: Call the service method to get the frequency of the "work" code
-        Map<String, Long> frequency = commitService.getCodeFrequency(rep1.getRepoId(), code);
+        Map<String, Long> frequency = commitService.getCodeFrequency(rep1.getRepoId(), "PRC");
 
         // Assert: Check the expected frequency for the code
-        assertEquals(rep1.getRepoId(), frequency.get("PRC"));
-        assertEquals(rep1.getRepoId(), frequency.get("BGF"));
-        assertEquals(rep1.getRepoId(), frequency.get("FTR"));
-        assertEquals(rep1.getRepoId(), frequency.get("DEV"));
-        assertEquals(rep1.getRepoId(), frequency.get("PRD"));
+        assertEquals(null, frequency.get("PRC"));
+        assertEquals(null, frequency.get("BGF"));
+        assertEquals(null, frequency.get("FTR"));
+        assertEquals(null, frequency.get("DEV"));
+        assertEquals(null, frequency.get("PRD"));
     }
 
     // @Test
