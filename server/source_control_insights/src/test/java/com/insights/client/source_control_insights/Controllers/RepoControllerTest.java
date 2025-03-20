@@ -154,22 +154,4 @@ public class RepoControllerTest {
         assertEquals("Invalid sorting option.", response.getBody());
     }
 
-    // @Test
-    // void getRepoLeaderboard_Success() {
-    //     UUID repoId = UUID.randomUUID();
-    //     User user = mock(User.class);
-
-    //     when(userRepository.findDistinctContributorsByRepositoryId(repoId)).thenReturn(List.of(user));
-
-    //     LeaderBoardEntry entry = new LeaderBoardEntry(new ActivitySummary()); 
-
-    //     when(contributorService.getActivityForRepo(any(User.class), eq(repoId))).thenReturn(entry);
-
-    //     ResponseEntity<?> response = repositoryController.getRepoLeaderboard(repoId, "commits");
-
-    //     assertEquals(HttpStatus.OK, response.getStatusCode());
-    //     assertTrue(response.getBody() instanceof List);
-    //     assertFalse(((List<?>) response.getBody()).isEmpty());
-    //     assertEquals(entry, ((List<?>) response.getBody()).get(0));
-    // }
 }
