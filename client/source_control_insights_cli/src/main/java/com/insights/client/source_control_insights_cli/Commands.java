@@ -57,8 +57,7 @@ public class Commands {
             this.cliClientFilesHelper.writeToConfigFile(this.token);
             authenticatedApiClient.setJwt(this.token);
             return "Login successful";
-        } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+        } catch (Exception _) {
             return "Something went wrong logging in";
         }
     }
@@ -79,7 +78,7 @@ public class Commands {
             String remoteRepoUrl = repoUrl.isEmpty() ? this.commandOutputs.getRepoUrl() : repoUrl;
             authenticatedApiClient.createRepository(repoName, remoteRepoUrl);
             return "Repository successfully created";
-        } catch (Exception e) {
+        } catch (Exception _) {
             return "Something went wrong creating a repository";
         }
     }
@@ -123,8 +122,7 @@ public class Commands {
                     json.get("deletions").asInt(),
                     json.get("netChanges").asInt());
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "Error parsing JSON data.";
         }
     }
@@ -161,7 +159,7 @@ public class Commands {
                 String bar = "#".repeat(count / scaleFactor); 
                 output.append(String.format("%s | %s (%d)\n", date, bar, count));
             }
-        } catch (Exception e) {
+        } catch (Exception _) {
             return "Error parsing JSON data.";
         }
         return output.toString();
@@ -194,7 +192,7 @@ public class Commands {
             }
 
             return sb.toString();
-        } catch (Exception e) {
+        } catch (Exception _) {
             return "The response from the server was not valid JSON.";
         }
     }
@@ -247,8 +245,7 @@ public class Commands {
                     json.get("insertions").asInt(),
                     json.get("deletions").asInt(),
                     json.get("netChanges").asInt());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "ERROR: Could not fetch profile. Please try again.";
         }
     }
@@ -281,8 +278,7 @@ public class Commands {
             output.append("========================================");
 
             return output.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "ERROR: Could not fetch profile. Please try again.";
         }
     }
@@ -314,8 +310,7 @@ public class Commands {
 
         output.append("===================================================================\n");
         return output.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "ERROR: Could not fetch profile. Please try again.";
         }
     }
@@ -351,8 +346,7 @@ public class Commands {
             }
 
             return output.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "ERROR: Could not fetch commits. Please try again.";
         }
     }
@@ -365,8 +359,7 @@ public class Commands {
             if (!loginService.isValidToken(this.token))
                 return "You must be logged in to access this command";
             return authenticatedApiClient.updateRepo(repoId, GitLogFetcher.getGitLogAsCSV(path));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
             return "File does not exist or something idk man do better";
         }
     }
