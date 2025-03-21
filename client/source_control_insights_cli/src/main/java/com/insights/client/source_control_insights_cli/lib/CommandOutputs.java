@@ -23,4 +23,8 @@ public class CommandOutputs {
     public String getRepoName() {
         return Arrays.asList(processOutput.getCommand(List.of("git", "rev-parse", "--show-toplevel")).split("[/\\\\]")).getLast().strip();
     }
+
+    public String getRepoLocalDirectory() {
+        return processOutput.getCommand(List.of("git", "rev-parse", "--show-toplevel"));
+    }
 }
