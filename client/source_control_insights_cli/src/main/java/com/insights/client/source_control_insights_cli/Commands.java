@@ -358,7 +358,7 @@ public class Commands {
         try {
             if (!loginService.isValidToken(this.token))
                 return "You must be logged in to access this command";
-            return authenticatedApiClient.updateRepo(repoId, GitLogFetcher.getGitLogAsCSV(path));
+            return authenticatedApiClient.updateRepo(repoId, GitLogFetcher.getGitLogAsCSV(path.replaceAll("\\\\", "/")));
         } catch (Exception _) {
             return "File does not exist or something idk man do better";
         }
